@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 /* Define platform endianness */
-#define BYTE_ORDER LITTLE_ENDIAN
 #include "wm_type_def.h"
 #if 0 // remove by kevin 140612
 /* The unsigned data types */
@@ -72,7 +71,5 @@ typedef u32_t mem_ptr_t;
 #else
 #define LWIP_PLATFORM_DIAG(x) do { printf x;} while(0)
 #endif
-
-#define LWIP_PROVIDE_ERRNO /* Make lwip/arch.h define the codes which are used throughout */
 
 #endif /* CC_H_INCLUDED */
