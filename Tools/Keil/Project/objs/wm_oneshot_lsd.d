@@ -1,0 +1,14 @@
+.\objs\wm_oneshot_lsd.o: ..\..\..\Src\App\oneshotconfig\wm_oneshot_lsd.c
+.\objs\wm_oneshot_lsd.o: ..\..\..\Src\App\oneshotconfig\wm_oneshot_lsd.h
+.\objs\wm_oneshot_lsd.o: C:\Keil\ARM\RV31\INC\string.h
+.\objs\wm_oneshot_lsd.o: C:\Keil\ARM\RV31\INC\stdlib.h
+.\objs\wm_oneshot_lsd.o: C:\Keil\ARM\RV31\INC\stdio.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\wm_type_def.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\WiFi\wm_wifi.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Platform\Inc\tls_common.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\OS\wm_osal.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\wm_config.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\OS\wm_os_config.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\wm_wifi_config.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\wm_ram_config.h
+.\objs\wm_oneshot_lsd.o: ..\..\..\Include\WiFi\wm_ieee80211.h

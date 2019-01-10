@@ -1,0 +1,12 @@
+.\objs\retarget.o: ..\..\..\Platform\Boot\armcc\retarget.c
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\stdio.h
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\rt_misc.h
+.\objs\retarget.o: ..\..\..\Include\wm_config.h
+.\objs\retarget.o: ..\..\..\Include\OS\wm_os_config.h
+.\objs\retarget.o: ..\..\..\Include\wm_wifi_config.h
+.\objs\retarget.o: ..\..\..\Include\wm_ram_config.h
+.\objs\retarget.o: ..\..\..\Include\wm_regs.h
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\core_cm3.h
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\stdint.h
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\string.h
+.\objs\retarget.o: C:\Keil\ARM\RV31\INC\stdarg.h
