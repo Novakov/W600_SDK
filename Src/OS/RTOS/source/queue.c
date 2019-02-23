@@ -61,15 +61,13 @@ task.h is included from an application file. */
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "rtosqueue.h"
 
 #if ( configUSE_CO_ROUTINES == 1 )
 	#include "croutine.h"
 #endif
-#include "wm_config.h"
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
-#if TLS_OS_FREERTOS
+
 /*-----------------------------------------------------------
  * PUBLIC LIST API documented in list.h
  *----------------------------------------------------------*/
@@ -100,7 +98,6 @@ zero. */
  * Definition of the queue used by the scheduler.
  * Items are queued by copy, not reference.
  */
-#if 0
 typedef struct QueueDefinition
 {
 	signed char *pcHead;				/*< Points to the beginning of the queue storage area. */
@@ -120,7 +117,6 @@ typedef struct QueueDefinition
 	signed portBASE_TYPE xTxLock;			/*< Stores the number of items transmitted to the queue (added to the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
 
 } xQUEUE;
-#endif
 /*-----------------------------------------------------------*/
 
 /*
@@ -128,7 +124,7 @@ typedef struct QueueDefinition
  * To keep the definition private the API header file defines it as a
  * pointer to void.
  */
-//typedef xQUEUE * xQueueHandle;
+typedef xQUEUE * xQueueHandle;
 
 /*
  * Prototypes for public functions are included here so we don't have to
@@ -300,58 +296,6 @@ xQueueHandle xReturn = NULL;
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
-
-//封装该接口的目的是上面的接口队列地址是内部申请的，但是之前ucos的接口是外部申请的
-xQueueHandle xQueueCreateExt( void *QueueStart, unsigned portBASE_TYPE uxQueueLength, unsigned portBASE_TYPE uxItemSize )
-{
-xQUEUE *pxNewQueue;
-//size_t xQueueSizeInBytes;
-xQueueHandle xReturn = NULL;
-
-	/* Allocate the new queue structure. */
-	if( uxQueueLength > ( unsigned portBASE_TYPE ) 0 )
-	{
-		pxNewQueue = ( xQUEUE * ) pvPortMalloc( sizeof( xQUEUE ) );
-		if( pxNewQueue != NULL )
-		{
-			/* Create the list of pointers to queue items.  The queue is one byte
-			longer than asked for to make wrap checking easier/faster. */
-	//		xQueueSizeInBytes = ( size_t ) ( uxQueueLength * uxItemSize ) + ( size_t ) 1;
-
-			pxNewQueue->pcHead = ( signed char * ) QueueStart;//pvPortMalloc( xQueueSizeInBytes );
-			if( pxNewQueue->pcHead != NULL )
-			{
-				/* Initialise the queue members as described above where the
-				queue type is defined. */
-				pxNewQueue->pcTail = pxNewQueue->pcHead + ( uxQueueLength * uxItemSize );
-				pxNewQueue->uxMessagesWaiting = ( unsigned portBASE_TYPE ) 0U;
-				pxNewQueue->pcWriteTo = pxNewQueue->pcHead;
-				pxNewQueue->pcReadFrom = pxNewQueue->pcHead + ( ( uxQueueLength - ( unsigned portBASE_TYPE ) 1U ) * uxItemSize );
-				pxNewQueue->uxLength = uxQueueLength;
-				pxNewQueue->uxItemSize = uxItemSize;
-				pxNewQueue->xRxLock = queueUNLOCKED;
-				pxNewQueue->xTxLock = queueUNLOCKED;
-
-				/* Likewise ensure the event queues start with the correct state. */
-				vListInitialise( &( pxNewQueue->xTasksWaitingToSend ) );
-				vListInitialise( &( pxNewQueue->xTasksWaitingToReceive ) );
-
-				traceQUEUE_CREATE( pxNewQueue );
-				xReturn = pxNewQueue;
-			}
-			else
-			{
-				traceQUEUE_CREATE_FAILED();
-				vPortFree( pxNewQueue );
-			}
-		}
-	}
-
-	configASSERT( xReturn );
-
-	return xReturn;
-}
-
 
 #if ( configUSE_MUTEXES == 1 )
 
@@ -1139,18 +1083,6 @@ void vQueueDelete( xQueueHandle pxQueue )
 	vPortFree( pxQueue->pcHead );
 	vPortFree( pxQueue );
 }
-
-
-void vQueueDeleteExt( xQueueHandle pxQueue )
-{
-	configASSERT( pxQueue );
-
-	traceQUEUE_DELETE( pxQueue );
-	vQueueUnregisterQueue( pxQueue );
-//	vPortFree( pxQueue->pcHead );	//外部释放
-	vPortFree( pxQueue );
-}
-
 /*-----------------------------------------------------------*/
 
 static void prvCopyDataToQueue( xQUEUE *pxQueue, const void *pvItemToQueue, portBASE_TYPE xPosition )
@@ -1601,4 +1533,4 @@ signed portBASE_TYPE xReturn;
 	}
 
 #endif
-#endif
+

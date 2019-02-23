@@ -58,7 +58,7 @@
 	#error "include FreeRTOS.h must appear in source files before include croutine.h"
 #endif
 
-#include "rtoslist.h"
+#include "list.h"
 
 #ifdef __cplusplus
 extern "C" {

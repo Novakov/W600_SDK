@@ -54,10 +54,8 @@
 
 #include <stdlib.h>
 #include "FreeRTOS.h"
-#include "rtoslist.h"
-#include "wm_config.h"
+#include "list.h"
 
-#if TLS_OS_FREERTOS
 /*-----------------------------------------------------------
  * PUBLIC LIST API documented in list.h
  *----------------------------------------------------------*/
@@ -189,6 +187,5 @@ xList * pxList;
 	pxItemToRemove->pvContainer = NULL;
 	( pxList->uxNumberOfItems )--;
 }
-#endif
 /*-----------------------------------------------------------*/
 

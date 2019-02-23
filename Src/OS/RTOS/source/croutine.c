@@ -54,9 +54,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "croutine.h"
-#include "wm_config.h"
 
-#if TLS_OS_FREERTOS
 /*
  * Some kernel aware debuggers require data to be viewed to be global, rather
  * than file scope.
@@ -373,4 +371,4 @@ signed portBASE_TYPE xReturn;
 
 	return xReturn;
 }
-#endif
+

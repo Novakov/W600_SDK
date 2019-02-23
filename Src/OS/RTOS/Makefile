@@ -22,18 +22,18 @@ GOAL  = $(LIB_DIR)/wmrtos.$(LIBTYPE)
 # Source section (User)
 #---------------------------------------------------------------------------
 ifeq ($(TOOL_GNU),1)
-#ASM_SRC				+= ports/portASM_gcc.s
+#ASM_SRC				+= ports/Other/portASM_gcc.s
 ASM_SRC				+= 
 else
 ifeq ($(ARCH_M3), 0)
-ASM_SRC				+= ports/portASM.s
+ASM_SRC				+= ports/Keil/portASM.s
 else
 ASM_SRC				+=
 endif
 endif
 
 ifeq ($(ARCH_M3), 0)
-C_SRC				+= ports/port.c
+C_SRC				+= ports/Other/port.c
 endif
 C_SRC				+= source/croutine.c
 C_SRC				+= source/heap_2.c
@@ -47,7 +47,7 @@ ifeq ($(ARCH_M3), 1)
 ifeq ($(TOOL_GNU),1)
 C_SRC				+= ports/port_m3_gcc.c
 else
-C_SRC				+= ports/port_m3.c
+C_SRC				+= ports/Keil/port_m3.c
 endif
 endif
 #---------------------------------------------------------------------------

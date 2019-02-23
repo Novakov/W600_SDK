@@ -60,7 +60,7 @@
 #endif
 
 #include "portable.h"
-#include "rtoslist.h"
+#include "list.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -162,10 +162,6 @@ typedef struct xTASK_PARAMTERS
  */
 #define taskEXIT_CRITICAL()			portEXIT_CRITICAL()
 
-extern void portDISABLE_INTERRUPTS(void);
-extern void portENABLE_INTERRUPTS(void);
-
-extern  void freeRtosTickIrqHandler( void );
 /**
  * task. h
  *
@@ -272,7 +268,6 @@ extern  void freeRtosTickIrqHandler( void );
  * \ingroup Tasks
  */
 #define xTaskCreate( pvTaskCode, pcName, usStackDepth, pvParameters, uxPriority, pxCreatedTask ) xTaskGenericCreate( ( pvTaskCode ), ( pcName ), ( usStackDepth ), ( pvParameters ), ( uxPriority ), ( pxCreatedTask ), ( NULL ), ( NULL ) )
-#define xTaskCreateExt( pvTaskCode, pcName, puxStackBuffer,usStackDepth, pvParameters, uxPriority, pxCreatedTask ) xTaskGenericCreate( ( pvTaskCode ), ( pcName ), ( usStackDepth ), ( pvParameters ), ( uxPriority ), ( pxCreatedTask ), ( puxStackBuffer ), ( NULL ) )
 
 /**
  * task. h
@@ -431,8 +426,6 @@ void vTaskAllocateMPURegions( xTaskHandle xTask, const xMemoryRegion * const pxR
  * \ingroup Tasks
  */
 void vTaskDelete( xTaskHandle pxTaskToDelete ) PRIVILEGED_FUNCTION;
-
-unsigned portBASE_TYPE vTaskDeleteByPriority(unsigned portBASE_TYPE prio);
 
 /*-----------------------------------------------------------
  * TASK CONTROL API

@@ -60,7 +60,7 @@
 #endif
 
 #include "portable.h"
-#include "rtoslist.h"
+#include "list.h"
 #include "task.h"
 
 #ifdef __cplusplus
@@ -88,20 +88,7 @@ as defined below. */
 typedef void * xTimerHandle;
 
 /* Define the prototype to which timer callback functions must conform. */
-//typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
-typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer,void *callback_arg );	//modify by dave
-
-/* The definition of the timers themselves. */
-typedef struct tmrTimerControl
-{
-	const signed char		*pcTimerName;		/*<< Text name.  This is not used by the kernel, it is included simply to make debugging easier. */
-	xListItem				xTimerListItem;		/*<< Standard linked list item as used by all kernel features for event management. */
-	portTickType			xTimerPeriodInTicks;/*<< How quickly and often the timer expires. */
-	unsigned portBASE_TYPE	uxAutoReload;		/*<< Set to pdTRUE if the timer should be automatically restarted once expired.  Set to pdFALSE if the timer is, in effect, a one shot timer. */
-	void 					*pvTimerID;			/*<< An ID to identify the timer.  This allows the timer to be identified when the same callback is used for multiple timers. */
-	tmrTIMER_CALLBACK		pxCallbackFunction;	/*<< The function that will be called when the timer expires. */
-	void 				*callback_arg;			/*added by dave */
-} xTIMER;
+typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
 
 /**
  * xTimerHandle xTimerCreate( 	const signed char *pcTimerName,
@@ -232,7 +219,6 @@ typedef struct tmrTimerControl
  * }
  */
 xTimerHandle xTimerCreate( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void * pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction ) PRIVILEGED_FUNCTION;
-xTimerHandle xTimerCreateExt( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void *pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction, void *callback_arg );
 
 /**
  * void *pvTimerGetTimerID( xTimerHandle xTimer );
@@ -711,9 +697,9 @@ xTaskHandle xTimerGetTimerDaemonTaskHandle( void );
  *     // compiler.  Inspect the demos for the port you are using to find the
  *     // actual syntax required.
  *     if( xHigherPriorityTaskWoken != pdFALSE )
- *     
+ *     {
  *         // Call the interrupt safe yield function here (actual function
- *         // depends on the FreeRTOS port being used.{
+ *         // depends on the FreeRTOS port being used.
  *     }
  * }
  */

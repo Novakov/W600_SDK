@@ -80,8 +80,8 @@
  */
 
 
-#ifndef RTOS_LIST_H
-#define RTOS_LIST_H
+#ifndef LIST_H
+#define LIST_H
 
 #ifdef __cplusplus
 extern "C" {

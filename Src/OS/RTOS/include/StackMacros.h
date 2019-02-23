@@ -96,7 +96,7 @@
 		/* Is the currently saved stack pointer within the stack limit? */								\
 		if( pxCurrentTCB->pxTopOfStack <= pxCurrentTCB->pxStack )										\
 		{																								\
-			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName, pxCurrentTCB->uxPriority);	\
+			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName );	\
 		}																								\
 	}
 
@@ -112,7 +112,7 @@
 		/* Is the currently saved stack pointer within the stack limit? */								\
 		if( pxCurrentTCB->pxTopOfStack >= pxCurrentTCB->pxEndOfStack )									\
 		{																								\
-			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName,pxCurrentTCB->uxPriority );	\
+			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName );	\
 		}																								\
 	}
 
@@ -133,7 +133,7 @@
 		/* Has the extremity of the task stack ever been written over? */																		\
 		if( memcmp( ( void * ) pxCurrentTCB->pxStack, ( void * ) ucExpectedStackBytes, sizeof( ucExpectedStackBytes ) ) != 0 )					\
 		{																																		\
-			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName,pxCurrentTCB->uxPriority );											\
+			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName );											\
 		}																																		\
 	}
 
@@ -157,7 +157,7 @@
 		/* Has the extremity of the task stack ever been written over? */																		\
 		if( memcmp( ( void * ) pcEndOfStack, ( void * ) ucExpectedStackBytes, sizeof( ucExpectedStackBytes ) ) != 0 )							\
 		{																																		\
-			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName,pxCurrentTCB->uxPriority );											\
+			vApplicationStackOverflowHook( ( xTaskHandle ) pxCurrentTCB, pxCurrentTCB->pcTaskName );											\
 		}																																		\
 	}
 

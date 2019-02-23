@@ -75,8 +75,7 @@ conform. */
 typedef portBASE_TYPE (*pdTASK_HOOK_CODE)( void * );
 
 
-extern int ulSetInterruptMaskFromISR( void );
-extern void vClearInterruptMaskFromISR( int ulMask );
+
 
 
 /*
@@ -130,7 +129,7 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 #endif
 
 #ifndef INCLUDE_xTaskGetIdleTaskHandle
-	#define INCLUDE_xTaskGetIdleTaskHandle 1
+	#define INCLUDE_xTaskGetIdleTaskHandle 0
 #endif
 
 #ifndef INCLUDE_xTimerGetTimerDaemonTaskHandle
@@ -146,7 +145,7 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 #endif
 
 #ifndef INCLUDE_uxTaskGetStackHighWaterMark
-	#define INCLUDE_uxTaskGetStackHighWaterMark 1
+	#define INCLUDE_uxTaskGetStackHighWaterMark 0
 #endif
 
 #ifndef configUSE_RECURSIVE_MUTEXES
@@ -158,15 +157,11 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 #endif
 
 #ifndef configUSE_TIMERS
-	#define configUSE_TIMERS 1
+	#define configUSE_TIMERS 0
 #endif
 
 #ifndef configUSE_COUNTING_SEMAPHORES
-	#define configUSE_COUNTING_SEMAPHORES 1
-#endif
-
-#ifndef configUSE_MAILBOX
-	#define configUSE_MAILBOX 1
+	#define configUSE_COUNTING_SEMAPHORES 0
 #endif
 
 #ifndef configUSE_ALTERNATIVE_API
@@ -201,18 +196,15 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 #if configUSE_TIMERS == 1
 
 	#ifndef configTIMER_TASK_PRIORITY
-		#define configTIMER_TASK_PRIORITY	1
-	//	#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_PRIORITY must also be defined.		
+		#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_PRIORITY must also be defined.
 	#endif /* configTIMER_TASK_PRIORITY */
 
 	#ifndef configTIMER_QUEUE_LENGTH
-		//#error If configUSE_TIMERS is set to 1 then configTIMER_QUEUE_LENGTH must also be defined.
-		#define configTIMER_QUEUE_LENGTH	50
+		#error If configUSE_TIMERS is set to 1 then configTIMER_QUEUE_LENGTH must also be defined.
 	#endif /* configTIMER_QUEUE_LENGTH */
 
 	#ifndef configTIMER_TASK_STACK_DEPTH
-		#define configTIMER_TASK_STACK_DEPTH 200
-		//#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_STACK_DEPTH must also be defined.
+		#error If configUSE_TIMERS is set to 1 then configTIMER_TASK_STACK_DEPTH must also be defined.
 	#endif /* configTIMER_TASK_STACK_DEPTH */
 
 #endif /* configUSE_TIMERS */
@@ -227,11 +219,11 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 
 
 #ifndef portSET_INTERRUPT_MASK_FROM_ISR
-	#define portSET_INTERRUPT_MASK_FROM_ISR() ulSetInterruptMaskFromISR()
+	#define portSET_INTERRUPT_MASK_FROM_ISR() 0
 #endif
 
 #ifndef portCLEAR_INTERRUPT_MASK_FROM_ISR
-	#define portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedStatusValue ) vClearInterruptMaskFromISR( uxSavedStatusValue )
+	#define portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedStatusValue ) ( void ) uxSavedStatusValue
 #endif
 
 
@@ -290,7 +282,7 @@ extern void vClearInterruptMaskFromISR( int ulMask );
 #endif
 
 #ifndef configCHECK_FOR_STACK_OVERFLOW
-	#define configCHECK_FOR_STACK_OVERFLOW 2
+	#define configCHECK_FOR_STACK_OVERFLOW 0
 #endif
 
 /* The following event macros are embedded in the kernel API calls. */
