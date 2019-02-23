@@ -40,7 +40,7 @@ C_SRC				+= source/heap_2.c
 C_SRC				+= source/heap_3.c
 C_SRC				+= source/list.c
 C_SRC				+= source/queue.c
-C_SRC				+= source/rtostimers.c
+C_SRC				+= source/timers.c
 C_SRC				+= source/tasks.c
 C_SRC				+= wm_osal_rtos.c
 ifeq ($(ARCH_M3), 1)
@@ -54,10 +54,10 @@ endif
 # Implicit rules
 #---------------------------------------------------------------------------
 .c.o:
-	$(CC) $(CFLAGS) -c -o $*.o $< $(INCLUDES)
+	$(CC) $(CFLAGS) -c -o $*.o $< -I./include $(INCLUDES)
 
 .s.o:
-	$(ASM) $(ASMFLAGS) -c -o $*.o $< $(INCLUDES)
+	$(ASM) $(ASMFLAGS) -c -o $*.o $< -I./include $(INCLUDES)
 
 #---------------------------------------------------------------------------
 # Explicit ruls

@@ -25,9 +25,9 @@
 #include "wm_irq.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "rtosqueue.h"
+#include "queue.h"
 #include "semphr.h"
-#include "rtostimers.h"
+#include "timers.h"
 #include "FreeRTOSConfig.h"
 #include "wm_osal.h"
 #include "wm_mem.h"
@@ -98,7 +98,7 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 		(portSTACK_TYPE *)stk_start,
 		stk_size/sizeof(u32),
 		param,
-		configMAX_PRIORITIES - prio,	/*优先级颠倒一下，与ucos优先级顺序相反*/
+		configMAX_PRIORITIES - prio,	/*脫墓膸膶慕露碌脽碌膮艊禄膸脗艁卢脫毛ucos脫墓膸膶慕露脣艂膼艌膸艜路麓*/
 		task	);
 	//printf("configMAX_PRIORITIES - prio:%d\n", configMAX_PRIORITIES - prio);
     if (error == pdTRUE)
@@ -282,7 +282,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 *              2) You MUST NOT change the priority of the task that owns the mutex
 *********************************************************************************************************
 */
-//不可在中断中调用
+//藳禄偶脡脭脷脰膼露膸脰膼碌梅脫膫
  tls_os_status_t tls_os_mutex_acquire(tls_os_mutex_t *mutex,
         u32 wait_time)
 {
@@ -421,7 +421,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 *			TLS_OS_ERROR
 *********************************************************************************************************
 */
-//该函数不可用于中断服务程序中
+//赂膫艧呕臉媒藳禄偶脡脫膫脫脷脰膼露膸路牛脦艅艂臍膼艌脰膼
  tls_os_status_t tls_os_sem_acquire(tls_os_sem_t *sem,
         u32 wait_time)
 {
@@ -556,7 +556,7 @@ extern u32 __heap_base;
  tls_os_status_t tls_os_queue_delete(tls_os_queue_t *queue)
 {
 
-	if ((u32 *)(((xQUEUE *)queue)->pcHead) >= &__heap_base)		//如果没有从堆申请，不用释放)
+	if ((u32 *)(((xQUEUE *)queue)->pcHead) >= &__heap_base)		//膶莽膮疟膫禄脫膼麓脫露艃脡臋脟毛艁卢藳禄脫膫臉脥路墓)
 	{
 		tls_mem_free(((xQUEUE *)queue)->pcHead);
 	}
