@@ -28,9 +28,9 @@
 #include "queue.h"
 #include "semphr.h"
 #include "timers.h"
-#include "FreeRTOSConfig.h"
 #include "wm_osal.h"
 #include "wm_mem.h"
+#include "wm_os_extras.h"
 /*
 *********************************************************************************************************
 *                                     CREATE A TASK (Extended Version)
@@ -98,7 +98,7 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 		(portSTACK_TYPE *)stk_start,
 		stk_size/sizeof(u32),
 		param,
-		configMAX_PRIORITIES - prio,	/*脫墓膸膶慕露碌脽碌膮艊禄膸脗艁卢脫毛ucos脫墓膸膶慕露脣艂膼艌膸艜路麓*/
+		configMAX_PRIORITIES - prio,	/*优先级颠倒一下，与ucos优先级顺序相反*/
 		task	);
 	//printf("configMAX_PRIORITIES - prio:%d\n", configMAX_PRIORITIES - prio);
     if (error == pdTRUE)
@@ -253,7 +253,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 */
  tls_os_status_t tls_os_mutex_delete(tls_os_mutex_t *mutex)
 {
-	vSemaphoreDelete((xQUEUE *)mutex);
+	vSemaphoreDelete((xQueueHandle)mutex);
 
     return TLS_OS_SUCCESS;
 }
@@ -282,7 +282,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 *              2) You MUST NOT change the priority of the task that owns the mutex
 *********************************************************************************************************
 */
-//藳禄偶脡脭脷脰膼露膸脰膼碌梅脫膫
+//不可在中断中调用
  tls_os_status_t tls_os_mutex_acquire(tls_os_mutex_t *mutex,
         u32 wait_time)
 {
@@ -294,7 +294,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 		time = portMAX_DELAY;
 	else
 		time = wait_time;
-	error = xSemaphoreTake((xQUEUE *)mutex, time );
+	error = xSemaphoreTake((xQueueHandle)mutex, time );
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
     else
@@ -327,7 +327,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xSemaphoreGiveFromISR((xQUEUE *)mutex, &pxHigherPriorityTaskWoken );
+		error = xSemaphoreGiveFromISR((xQueueHandle)mutex, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD_FROM_ISR();
@@ -335,7 +335,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 	}
 	else
 	{
-		error = xSemaphoreGive((xQUEUE *)mutex );
+		error = xSemaphoreGive((xQueueHandle)mutex );
 	}
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
@@ -398,7 +398,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 */
  tls_os_status_t tls_os_sem_delete(tls_os_sem_t *sem)
 {
-	vSemaphoreDelete((xQUEUE *)sem);
+	vSemaphoreDelete((xQueueHandle)sem);
 
     return TLS_OS_SUCCESS;
 }
@@ -421,7 +421,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 *			TLS_OS_ERROR
 *********************************************************************************************************
 */
-//赂膫艧呕臉媒藳禄偶脡脫膫脫脷脰膼露膸路牛脦艅艂臍膼艌脰膼
+//该函数不可用于中断服务程序中
  tls_os_status_t tls_os_sem_acquire(tls_os_sem_t *sem,
         u32 wait_time)
 {
@@ -433,7 +433,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 		time = portMAX_DELAY;
 	else
 		time = wait_time;
-	error = xSemaphoreTake((xQUEUE *)sem, time );
+	error = xSemaphoreTake((xQueueHandle)sem, time );
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
     else
@@ -465,7 +465,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xSemaphoreGiveFromISR((xQUEUE *)sem, &pxHigherPriorityTaskWoken );
+		error = xSemaphoreGiveFromISR((xQueueHandle)sem, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD_FROM_ISR();
@@ -473,7 +473,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 	}
 	else
 	{
-		error = xSemaphoreGive((xQUEUE *)sem );
+		error = xSemaphoreGive((xQueueHandle)sem );
 	}
 	if (error == pdPASS)
 		os_status = TLS_OS_SUCCESS;
@@ -555,12 +555,12 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 extern u32 __heap_base;
  tls_os_status_t tls_os_queue_delete(tls_os_queue_t *queue)
 {
-
-	if ((u32 *)(((xQUEUE *)queue)->pcHead) >= &__heap_base)		//膶莽膮疟膫禄脫膼麓脫露艃脡臋脟毛艁卢藳禄脫膫臉脥路墓)
+	u32* queueStorageAddress = (u32*)xQueueGetStoragePointer((xQueueHandle)queue);
+	if (queueStorageAddress >= &__heap_base)		//If you don't apply from the heap, don't release it)
 	{
-		tls_mem_free(((xQUEUE *)queue)->pcHead);
+		tls_mem_free(queueStorageAddress);
 	}
-	vQueueDeleteExt((xQUEUE *)queue);
+	vQueueDeleteExt((xQueueHandle)queue);
 
     return TLS_OS_SUCCESS;
 }
@@ -592,7 +592,7 @@ extern u32 __heap_base;
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueSendFromISR((xQUEUE *) queue, &msg, &pxHigherPriorityTaskWoken );
+		error = xQueueSendFromISR((xQueueHandle) queue, &msg, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{			
 			portYIELD_FROM_ISR();
@@ -600,7 +600,7 @@ extern u32 __heap_base;
 	}
 	else
 	{
-		error = xQueueSend((xQUEUE *)queue, &msg, 0 );
+		error = xQueueSend((xQueueHandle)queue, &msg, 0 );
 	}
 
     if (error == pdPASS)
@@ -650,7 +650,7 @@ extern u32 __heap_base;
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueReceiveFromISR((xQUEUE *)queue, msg, &pxHigherPriorityTaskWoken);
+		error = xQueueReceiveFromISR((xQueueHandle)queue, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD_FROM_ISR();
@@ -658,7 +658,7 @@ extern u32 __heap_base;
 	}
 	else
 	{
-		error = xQueueReceive((xQUEUE *)queue, msg, xTicksToWait );
+		error = xQueueReceive((xQueueHandle)queue, msg, xTicksToWait );
 	}
 
     if (error == pdPASS)
@@ -747,7 +747,7 @@ Returns    : TLS_OS_SUCCESS
 
  tls_os_status_t tls_os_mailbox_delete(tls_os_mailbox_t *mailbox)
 {
-	vQueueDelete((xQUEUE *)mailbox);
+	vQueueDelete((xQueueHandle)mailbox);
 
     return TLS_OS_SUCCESS;
 }
@@ -778,7 +778,7 @@ Returns    : TLS_OS_SUCCESS
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueSendFromISR( (xQUEUE *)mailbox, &msg, &pxHigherPriorityTaskWoken );
+		error = xQueueSendFromISR( (xQueueHandle)mailbox, &msg, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			vTaskSwitchContext();
@@ -786,7 +786,7 @@ Returns    : TLS_OS_SUCCESS
 	}
 	else
 	{
-		error = xQueueSend( (xQUEUE *)mailbox, &msg, 0 );
+		error = xQueueSend( (xQueueHandle)mailbox, &msg, 0 );
 	}
 
     if (error == pdPASS)
@@ -834,7 +834,7 @@ Returns    : TLS_OS_SUCCESS
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueReceiveFromISR((xQUEUE *)mailbox, msg, &pxHigherPriorityTaskWoken);
+		error = xQueueReceiveFromISR((xQueueHandle)mailbox, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD_FROM_ISR();
@@ -842,7 +842,7 @@ Returns    : TLS_OS_SUCCESS
 	}
 	else
 	{
-		error = xQueueReceive( (xQUEUE *)mailbox, msg, xTicksToWait );
+		error = xQueueReceive( (xQueueHandle)mailbox, msg, xTicksToWait );
 	}
 
     if (error == pdPASS)

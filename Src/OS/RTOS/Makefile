@@ -43,6 +43,7 @@ C_SRC				+= source/queue.c
 C_SRC				+= source/timers.c
 C_SRC				+= source/tasks.c
 C_SRC				+= wm_osal_rtos.c
+C_SRC				+= wm_os_extras.c
 ifeq ($(ARCH_M3), 1)
 ifeq ($(TOOL_GNU),1)
 C_SRC				+= ports/port_m3_gcc.c
