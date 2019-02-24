@@ -47,6 +47,7 @@ C_SRC				+= wm_os_extras.c
 ifeq ($(ARCH_M3), 1)
 ifeq ($(TOOL_GNU),1)
 C_SRC				+= ports/port_m3_gcc.c
+C_SRC				+= ports/port_wm_extras.c
 else
 C_SRC				+= ports/Keil/port_m3.c
 endif

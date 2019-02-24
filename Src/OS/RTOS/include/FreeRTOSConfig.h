@@ -105,4 +105,48 @@ to exclude the API function. */
 #define configUSE_MUTEXES                   1 //使用互斥锁
 #define INCLUDE_xTaskGetCurrentTaskHandle   1 //可以获取当前任务
 
+#define INCLUDE_xTaskGetIdleTaskHandle 1
+#define INCLUDE_uxTaskGetStackHighWaterMark 1
+#define configUSE_TIMERS 1
+#define configUSE_COUNTING_SEMAPHORES 1
+#define configUSE_MAILBOX 1
+
+#define configTIMER_TASK_PRIORITY	1
+#define configTIMER_QUEUE_LENGTH	50
+#define configTIMER_TASK_STACK_DEPTH 200
+#define configCHECK_FOR_STACK_OVERFLOW 2
+
+// --- ---
+
+// Cortex-M3 specific defines
+
+
+void portDISABLE_INTERRUPTS_WM(void);
+void portENABLE_INTERRUPTS_WM(void);
+void wmAssertCalled(const char * file, int line);
+
+
+#define configASSERT(x) if( ( x ) == 0 ) wmAssertCalled( __FILE__, __LINE__ )
+
+/* Cortex-M specific definitions. */
+#ifdef __NVIC_PRIO_BITS
+/* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
+#define configPRIO_BITS __NVIC_PRIO_BITS
+#else
+#define configPRIO_BITS 4 /* 7 priority levels */
+#endif
+
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 0x0F
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 0x0B
+
+#define configKERNEL_INTERRUPT_PRIORITY (configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
+/* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
+See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY              \
+    (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS)) /* equivalent to 0xb0, or priority 11. */
+
+#define vPortSVCHandler SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
+#define xPortSysTickHandler OS_CPU_SysTickHandler
+
 #endif /* FREERTOS_CONFIG_H */

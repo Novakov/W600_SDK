@@ -72,3 +72,10 @@ void vQueueDeleteExt( xQueueHandle pxQueue )
 //	vPortFree( pxQueue->pcHead );	//External release
 	vPortFree( pxQueue );
 }
+
+#include <stdio.h>
+
+void wmAssertCalled(const char * file, int line)
+{
+    printf("ASSERT in %s:%d", file, line);
+}

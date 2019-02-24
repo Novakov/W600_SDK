@@ -330,7 +330,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 		error = xSemaphoreGiveFromISR((xQueueHandle)mutex, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -468,7 +468,7 @@ tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
 		error = xSemaphoreGiveFromISR((xQueueHandle)sem, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -595,7 +595,7 @@ extern u32 __heap_base;
 		error = xQueueSendFromISR((xQueueHandle) queue, &msg, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{			
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -653,7 +653,7 @@ extern u32 __heap_base;
 		error = xQueueReceiveFromISR((xQueueHandle)queue, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -837,7 +837,7 @@ Returns    : TLS_OS_SUCCESS
 		error = xQueueReceiveFromISR((xQueueHandle)mailbox, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -939,14 +939,20 @@ u32 os_cnter = 0;
     tls_os_status_t os_status;
 
 	if(0 == period)
+	{	
 		period = 1;
+	}
 #if configUSE_TIMERS
 	*timer = (xTIMER *)xTimerCreateExt( (signed char *)name, period, repeat, NULL, callback, callback_arg );
 #endif
-    if (*timer  != NULL)
-        os_status = TLS_OS_SUCCESS;
+    if (*timer != NULL)
+    {   
+		os_status = TLS_OS_SUCCESS;
+	}
     else
-        os_status = TLS_OS_ERROR;
+    {   
+		os_status = TLS_OS_ERROR;
+	}
 
 	return os_status;
 }
@@ -974,7 +980,7 @@ u32 os_cnter = 0;
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -1012,7 +1018,7 @@ u32 os_cnter = 0;
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
@@ -1046,7 +1052,7 @@ u32 os_cnter = 0;
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
-			portYIELD_FROM_ISR();
+			portYIELD();
 		}
 	}
 	else
