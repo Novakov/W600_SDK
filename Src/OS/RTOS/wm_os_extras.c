@@ -1,9 +1,12 @@
+#include <stdio.h>
 #include "FreeRTOS.h"
 #include "wm_os_extras_private.h"
 
 #ifndef queueUNLOCKED
 #define queueUNLOCKED					( ( signed portBASE_TYPE ) -1 )
 #endif
+
+const unsigned int HZ = 500;
 
 signed char * xQueueGetStoragePointer(xQueueHandle queue)
 {
@@ -73,7 +76,6 @@ void vQueueDeleteExt( xQueueHandle pxQueue )
 	vPortFree( pxQueue );
 }
 
-#include <stdio.h>
 
 void wmAssertCalled(const char * file, int line)
 {

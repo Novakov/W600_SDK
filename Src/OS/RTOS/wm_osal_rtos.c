@@ -115,10 +115,10 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 *                                            DELETE A TASK
 *
 * Description: This function allows you to delete a task.  The calling task can delete itself by
-*              its own priority number.  The deleted task is returned to the dormant state and can be
+*              its own handle.  The deleted task is returned to the dormant state and can be
 *              re-activated by creating the deleted task again.
 *
-* Arguments  : prio: the task priority
+* Arguments  : task: the task handle to delete
 *                    freefun: function to free resource
 *
 * Returns    : TLS_OS_SUCCESS             if the call is successful
@@ -126,16 +126,13 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 *********************************************************************************************************
 */
 #if ( INCLUDE_vTaskDelete == 1 )
-tls_os_status_t tls_os_task_del(u8 prio,void (*freefun)(void))
-{
-	if (0 == vTaskDeleteByPriority(configMAX_PRIORITIES - prio)){
-		if (freefun){
-			freefun();
-		}
-		return TLS_OS_SUCCESS;
+tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
+{	
+	vTaskDelete(task);	
+	if (freefun){
+		freefun();
 	}
-
-	return TLS_OS_ERROR;
+	return TLS_OS_SUCCESS;
 }
 #endif
 
