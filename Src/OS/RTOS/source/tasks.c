@@ -89,6 +89,7 @@ typedef struct tskTaskControlBlock
 	xListItem				xEventListItem;		/*< List item used to place the TCB in event lists. */
 	unsigned portBASE_TYPE	uxPriority;			/*< The priority of the task where 0 is the lowest priority. */
 	portSTACK_TYPE			*pxStack;			/*< Points to the start of the stack. */
+	portSTACK_TYPE			stacksize;
 	signed char				pcTaskName[ configMAX_TASK_NAME_LEN ];/*< Descriptive name given to the task when created.  Facilitates debugging only. */
 
 	#if ( portSTACK_GROWTH > 0 )
@@ -333,7 +334,7 @@ portTickType xItemValue;																\
 #define prvGetTCBFromHandle( pxHandle ) ( ( ( pxHandle ) == NULL ) ? ( tskTCB * ) pxCurrentTCB : ( tskTCB * ) ( pxHandle ) )
 
 /* Callback function prototypes. --------------------------*/
-extern void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName );
+extern void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed char *pcTaskName , signed char prio);
 extern void vApplicationTickHook( void );
 		
 /* File private functions. --------------------------------*/
@@ -1321,8 +1322,9 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 			/* Run through all the lists that could potentially contain a TCB and
 			report the task name, state and stack high water mark. */
 
-			*pcWriteBuffer = ( signed char ) 0x00;
-			strcat( ( char * ) pcWriteBuffer, ( const char * ) "\r\n" );
+			//*pcWriteBuffer = ( signed char ) 0x00;
+			strcpy((char *)pcWriteBuffer,"task\t\ttask status\tstack total\tstack remain\tstack least remain\r\n");
+			//strcat( ( char * ) pcWriteBuffer, ( const char * ) "\r\n" );
 
 			uxQueue = uxTopUsedPriority + ( unsigned portBASE_TYPE ) 1U;
 
@@ -1988,7 +1990,10 @@ static void prvInitialiseTCBVariables( tskTCB *pxTCB, const signed char * const 
 	#if configMAX_TASK_NAME_LEN > 1
 	{
 		/* Don't bring strncpy into the build unnecessarily. */
-		strncpy( ( char * ) pxTCB->pcTaskName, ( const char * ) pcName, ( unsigned short ) configMAX_TASK_NAME_LEN );
+		if(NULL == pcName)
+			*( char * ) pxTCB->pcTaskName = (char)(configMAX_PRIORITIES - uxPriority);
+		else
+			strncpy( ( char * ) pxTCB->pcTaskName, ( const char * ) pcName, ( unsigned short ) configMAX_TASK_NAME_LEN );
 	}
 	#endif
 	pxTCB->pcTaskName[ ( unsigned short ) configMAX_TASK_NAME_LEN - ( unsigned short ) 1 ] = ( signed char ) '\0';
@@ -2184,6 +2189,7 @@ tskTCB *pxNewTCB;
 		}
 		else
 		{
+			pxNewTCB->stacksize = ( size_t ) usStackDepth * sizeof( portSTACK_TYPE );
 			/* Just to help debugging. */
 			memset( pxNewTCB->pxStack, ( int ) tskSTACK_FILL_BYTE, ( size_t ) usStackDepth * sizeof( portSTACK_TYPE ) );
 		}
@@ -2199,6 +2205,7 @@ tskTCB *pxNewTCB;
 	{
 	volatile tskTCB *pxNextTCB, *pxFirstTCB;
 	unsigned short usStackRemaining;
+	unsigned short usCurStack = 0;
 
 		/* Write the details of all the TCB's in pxList into the buffer. */
 		listGET_OWNER_OF_NEXT_ENTRY( pxFirstTCB, pxList );
@@ -2212,10 +2219,16 @@ tskTCB *pxNewTCB;
 			#else
 			{
 				usStackRemaining = usTaskCheckFreeStackSpace( ( unsigned char * ) pxNextTCB->pxStack );
+				usStackRemaining*=4;	//转成byte
+				if(pxNextTCB->pxTopOfStack >= pxNextTCB->pxStack)
+				{
+					usCurStack = (pxNextTCB->pxTopOfStack - pxNextTCB->pxStack)*4;	//转成byte
+				}
 			}
 			#endif			
 			
-			sprintf( pcStatusString, ( char * ) "%s\t\t%c\t%u\t%u\t%u\r\n", pxNextTCB->pcTaskName, cStatus, ( unsigned int ) pxNextTCB->uxPriority, usStackRemaining, ( unsigned int ) pxNextTCB->uxTCBNumber );
+			//sprintf( pcStatusString, ( char * ) "%s\t\t%c\t%u\t%u\t%u\r\n", pxNextTCB->pcTaskName, cStatus, ( unsigned int ) pxNextTCB->uxPriority, usStackRemaining, ( unsigned int ) pxNextTCB->uxTCBNumber );
+			sprintf( pcStatusString, ( char * ) "%u\t\t%c\t\t%u\t\t%u\t\t%u\t\r\n", ( unsigned int ) (configMAX_PRIORITIES - pxNextTCB->uxPriority),  cStatus, ( unsigned int )pxNextTCB->stacksize, ( unsigned int )usCurStack,( unsigned int )usStackRemaining );
 			strcat( ( char * ) pcWriteBuffer, ( char * ) pcStatusString );
 
 		} while( pxNextTCB != pxFirstTCB );

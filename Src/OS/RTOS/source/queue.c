@@ -65,6 +65,7 @@ task.h is included from an application file. */
 #if ( configUSE_CO_ROUTINES == 1 )
 	#include "croutine.h"
 #endif
+#include "wm_os_extras_private.h"
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
@@ -98,6 +99,7 @@ zero. */
  * Definition of the queue used by the scheduler.
  * Items are queued by copy, not reference.
  */
+#if 0
 typedef struct QueueDefinition
 {
 	signed char *pcHead;				/*< Points to the beginning of the queue storage area. */
@@ -117,6 +119,7 @@ typedef struct QueueDefinition
 	signed portBASE_TYPE xTxLock;			/*< Stores the number of items transmitted to the queue (added to the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
 
 } xQUEUE;
+#endif
 /*-----------------------------------------------------------*/
 
 /*
@@ -124,7 +127,7 @@ typedef struct QueueDefinition
  * To keep the definition private the API header file defines it as a
  * pointer to void.
  */
-typedef xQUEUE * xQueueHandle;
+//typedef xQUEUE * xQueueHandle;
 
 /*
  * Prototypes for public functions are included here so we don't have to
