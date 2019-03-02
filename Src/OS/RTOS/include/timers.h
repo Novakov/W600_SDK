@@ -88,7 +88,8 @@ as defined below. */
 typedef void * xTimerHandle;
 
 /* Define the prototype to which timer callback functions must conform. */
-typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
+//typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
+typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer,void *callback_arg );	//modify by dave
 
 /**
  * xTimerHandle xTimerCreate( 	const signed char *pcTimerName,
@@ -219,6 +220,7 @@ typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
  * }
  */
 xTimerHandle xTimerCreate( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void * pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction ) PRIVILEGED_FUNCTION;
+xTimerHandle xTimerCreateExt( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void *pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction, void *callback_arg );
 
 /**
  * void *pvTimerGetTimerID( xTimerHandle xTimer );

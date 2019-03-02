@@ -81,6 +81,7 @@ typedef struct tmrTimerControl
 	unsigned portBASE_TYPE	uxAutoReload;		/*<< Set to pdTRUE if the timer should be automatically restarted once expired.  Set to pdFALSE if the timer is, in effect, a one shot timer. */
 	void 					*pvTimerID;			/*<< An ID to identify the timer.  This allows the timer to be identified when the same callback is used for multiple timers. */
 	tmrTIMER_CALLBACK		pxCallbackFunction;	/*<< The function that will be called when the timer expires. */
+	void 				*callback_arg;			/*added by dave */
 } xTIMER;
 
 /* The definition of messages that can be sent and received on the timer
@@ -227,6 +228,7 @@ xTIMER *pxNewTimer;
 			pxNewTimer->uxAutoReload = uxAutoReload;
 			pxNewTimer->pvTimerID = pvTimerID;
 			pxNewTimer->pxCallbackFunction = pxCallbackFunction;
+			pxNewTimer->callback_arg = NULL;		//add by dave
 			vListInitialiseItem( &( pxNewTimer->xTimerListItem ) );
 			
 			traceTIMER_CREATE( pxNewTimer );
@@ -239,6 +241,46 @@ xTIMER *pxNewTimer;
 	
 	return ( xTimerHandle ) pxNewTimer;
 }
+
+xTimerHandle xTimerCreateExt( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void *pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction, void *callback_arg )
+{
+xTIMER *pxNewTimer;
+
+	/* Allocate the timer structure. */
+	if( xTimerPeriodInTicks == ( portTickType ) 0U )
+	{
+		pxNewTimer = NULL;
+		configASSERT( ( xTimerPeriodInTicks > 0 ) );
+	}
+	else
+	{
+		pxNewTimer = ( xTIMER * ) pvPortMalloc( sizeof( xTIMER ) );
+		if( pxNewTimer != NULL )
+		{
+			/* Ensure the infrastructure used by the timer service task has been
+			created/initialised. */
+			prvCheckForValidListAndQueue();
+	
+			/* Initialise the timer structure members using the function parameters. */
+			pxNewTimer->pcTimerName = pcTimerName;
+			pxNewTimer->xTimerPeriodInTicks = xTimerPeriodInTicks;
+			pxNewTimer->uxAutoReload = uxAutoReload;
+			pxNewTimer->pvTimerID = pvTimerID;
+			pxNewTimer->pxCallbackFunction = pxCallbackFunction;
+			pxNewTimer->callback_arg = callback_arg;	//add by dave
+			vListInitialiseItem( &( pxNewTimer->xTimerListItem ) );
+			
+			traceTIMER_CREATE( pxNewTimer );
+		}
+		else
+		{
+			traceTIMER_CREATE_FAILED();
+		}
+	}
+	
+	return ( xTimerHandle ) pxNewTimer;
+}
+
 /*-----------------------------------------------------------*/
 
 portBASE_TYPE xTimerGenericCommand( xTimerHandle xTimer, portBASE_TYPE xCommandID, portTickType xOptionalValue, portBASE_TYPE *pxHigherPriorityTaskWoken, portTickType xBlockTime )
@@ -323,7 +365,8 @@ portBASE_TYPE xResult;
 	}
 
 	/* Call the timer callback. */
-	pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+	//pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+	pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer, pxTimer->callback_arg );	//modify by dave
 }
 /*-----------------------------------------------------------*/
 
@@ -499,10 +542,11 @@ portTickType xTimeNow;
 
 	/* In this case the xTimerListsWereSwitched parameter is not used, but it
 	must be present in the function call. */
-	xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
+	//xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
 
 	while( xQueueReceive( xTimerQueue, &xMessage, tmrNO_DELAY ) != pdFAIL )
 	{
+		xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
 		pxTimer = xMessage.pxTimer;
 
 		/* Is the timer already in a list of active timers?  When the command
@@ -527,7 +571,8 @@ portTickType xTimeNow;
 				{
 					/* The timer expired before it was added to the active timer
 					list.  Process it now. */
-					pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+					//pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+					pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer, pxTimer->callback_arg );//modify by dave
 
 					if( pxTimer->uxAutoReload == ( unsigned portBASE_TYPE ) pdTRUE )
 					{
@@ -588,7 +633,8 @@ portBASE_TYPE xResult;
 		/* Execute its callback, then send a command to restart the timer if
 		it is an auto-reload timer.  It cannot be restarted here as the lists
 		have not yet been switched. */
-		pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+		//pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer );
+		pxTimer->pxCallbackFunction( ( xTimerHandle ) pxTimer, pxTimer->callback_arg );	//modify by dave
 
 		if( pxTimer->uxAutoReload == ( unsigned portBASE_TYPE ) pdTRUE )
 		{

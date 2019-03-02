@@ -92,7 +92,7 @@ static unsigned portBASE_TYPE uxCriticalNesting = 0xaaaaaaaa;
 /*
  * Setup the timer to generate the tick interrupts.
  */
-static void prvSetupTimerInterrupt( void );
+//static void prvSetupTimerInterrupt( void );
 
 /*
  * Exception handlers.
@@ -169,12 +169,13 @@ portBASE_TYPE xPortStartScheduler( void )
 {
 	/* Make PendSV, CallSV and SysTick the same priroity as the kernel. */
 	*(portNVIC_SYSPRI2) |= portNVIC_PENDSV_PRI;
+#if 0	/*Tick move to wm_main.c*/
 	*(portNVIC_SYSPRI2) |= portNVIC_SYSTICK_PRI;
 
 	/* Start the timer that generates the tick ISR.  Interrupts are disabled
 	here already. */
 	prvSetupTimerInterrupt();
-
+#endif
 	/* Initialise the critical nesting count ready for the first task. */
 	uxCriticalNesting = 0;
 
@@ -209,7 +210,8 @@ void vPortEnterCritical( void )
 
 void vPortExitCritical( void )
 {
-	uxCriticalNesting--;
+	if (uxCriticalNesting)
+		uxCriticalNesting--;
 	if( uxCriticalNesting == 0 )
 	{
 		portENABLE_INTERRUPTS();

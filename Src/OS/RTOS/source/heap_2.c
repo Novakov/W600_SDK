@@ -68,9 +68,11 @@ task.h is included from an application file. */
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "wm_config.h"
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
-
+#if TLS_OS_FREERTOS
+#if !configUSE_HEAP3
 /* Allocate the memory for the heap.  The struct is used to force byte
 alignment without using any non-portable code. */
 static union xRTOS_HEAP
@@ -276,3 +278,6 @@ void vPortInitialiseBlocks( void )
 {
 	/* This just exists to keep the linker quiet. */
 }
+#endif
+#endif
+

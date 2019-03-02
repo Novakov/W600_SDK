@@ -129,15 +129,19 @@ extern void vPortYieldFromISR( void );
 		:::"r0"								\
 	)
 
-#define portSET_INTERRUPT_MASK_FROM_ISR()		0;portSET_INTERRUPT_MASK()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	portCLEAR_INTERRUPT_MASK();(void)x
+//#define portSET_INTERRUPT_MASK_FROM_ISR()		0;portSET_INTERRUPT_MASK()
+//#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	portCLEAR_INTERRUPT_MASK();(void)x
+#define portSET_INTERRUPT_MASK_FROM_ISR()		0;portDISABLE_INTERRUPTS()
+#define portCLEAR_INTERRUPT_MASK_FROM_ISR(x)	portENABLE_INTERRUPTS();(void)x
 
 
 extern void vPortEnterCritical( void );
 extern void vPortExitCritical( void );
 
-#define portDISABLE_INTERRUPTS()	portSET_INTERRUPT_MASK()
-#define portENABLE_INTERRUPTS()		portCLEAR_INTERRUPT_MASK()
+//#define portDISABLE_INTERRUPTS()	portSET_INTERRUPT_MASK()
+//#define portENABLE_INTERRUPTS()		portCLEAR_INTERRUPT_MASK()
+#define portDISABLE_INTERRUPTS()	portDISABLE_INTERRUPTS_WM()
+#define portENABLE_INTERRUPTS()		portENABLE_INTERRUPTS_WM()
 #define portENTER_CRITICAL()		vPortEnterCritical()
 #define portEXIT_CRITICAL()			vPortExitCritical()
 /*-----------------------------------------------------------*/

@@ -72,9 +72,13 @@ task.h is included from an application file. */
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "wm_config.h"
+#include "wm_mem.h"
+
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
-
+#if TLS_OS_FREERTOS
+#if configUSE_HEAP3
 /*-----------------------------------------------------------*/
 
 void *pvPortMalloc( size_t xWantedSize )
@@ -83,7 +87,7 @@ void *pvReturn;
 
 	vTaskSuspendAll();
 	{
-		pvReturn = malloc( xWantedSize );
+		pvReturn = tls_mem_alloc( xWantedSize );
 	}
 	xTaskResumeAll();
 
@@ -107,11 +111,12 @@ void vPortFree( void *pv )
 	{
 		vTaskSuspendAll();
 		{
-			free( pv );
+			tls_mem_free( pv );
 		}
 		xTaskResumeAll();
 	}
 }
-
+#endif
+#endif
 
 
