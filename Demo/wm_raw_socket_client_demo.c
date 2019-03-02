@@ -13,6 +13,7 @@
 *****************************************************************************/ 
 #include <string.h>
 #include "wm_include.h"
+#include "wm_demo.h"
 
 u8 RemoteIp[4] = {192,168,1,199};	//demo作为client时，远程服务器的IP
 

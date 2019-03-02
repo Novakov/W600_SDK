@@ -187,7 +187,7 @@ endif
 # Implicit rules
 #---------------------------------------------------------------------------
 .c.o:
-	$(CC) $(CFLAGS) -c -o $*.o $< $(INCLUDES)
+	$(CC) $(CFLAGS) -c -o $*.o $< $(INCLUDES) -DBYTE_ORDER=LITTLE_ENDIAN -DLWIP_PROVIDE_ERRNO=1
 
 .s.o:
 	$(ASM) $(ASMFLAGS) -c -o $*.o $< $(INCLUDES)
