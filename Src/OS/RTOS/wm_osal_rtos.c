@@ -940,7 +940,7 @@ u32 os_cnter = 0;
 		period = 1;
 	}
 #if configUSE_TIMERS
-	*timer = (xTIMER *)xTimerCreateExt( (signed char *)name, period, repeat, NULL, callback, callback_arg );
+	*timer = (xTimerHandle)xTimerCreateExt( (signed char *)name, period, repeat, NULL, callback, callback_arg );
 #endif
     if (*timer != NULL)
     {   
@@ -973,7 +973,7 @@ u32 os_cnter = 0;
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerStartFromISR((xTIMER *)timer, &pxHigherPriorityTaskWoken );
+		xTimerStartFromISR((xTimerHandle)timer, &pxHigherPriorityTaskWoken );
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -983,7 +983,7 @@ u32 os_cnter = 0;
 	else
 	{
 #if configUSE_TIMERS
-		xTimerStart((xTIMER *)timer, 0 );		//no block time
+		xTimerStart((xTimerHandle)timer, 0 );		//no block time
 #endif
 	}
 }
@@ -1010,8 +1010,8 @@ u32 os_cnter = 0;
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerChangePeriodFromISR((xTIMER *)timer, ticks, &pxHigherPriorityTaskWoken );
-		xTimerStartFromISR( (xTIMER *)timer, &pxHigherPriorityTaskWoken );
+		xTimerChangePeriodFromISR((xTimerHandle)timer, ticks, &pxHigherPriorityTaskWoken );
+		xTimerStartFromISR( (xTimerHandle)timer, &pxHigherPriorityTaskWoken );
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -1021,8 +1021,8 @@ u32 os_cnter = 0;
 	else
 	{
 #if configUSE_TIMERS
-		xTimerChangePeriod((xTIMER *)timer, ticks, 0 );
-		xTimerStart((xTIMER *)timer, 0 );
+		xTimerChangePeriod((xTimerHandle)timer, ticks, 0 );
+		xTimerStart((xTimerHandle)timer, 0 );
 #endif
 	}
 }
@@ -1045,7 +1045,7 @@ u32 os_cnter = 0;
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerStopFromISR((xTIMER *)timer, &pxHigherPriorityTaskWoken );
+		xTimerStopFromISR((xTimerHandle)timer, &pxHigherPriorityTaskWoken );
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -1055,7 +1055,7 @@ u32 os_cnter = 0;
 	else
 	{
 #if configUSE_TIMERS
-		xTimerStop((xTIMER *)timer, 0 );
+		xTimerStop((xTimerHandle)timer, 0 );
 #endif
 	}
 }
@@ -1075,7 +1075,7 @@ u32 os_cnter = 0;
 {
 	int ret = 0;
 	/* xTimer is already active - delete it. */
-	ret = xTimerDelete((xTIMER *)timer, 10);
+	ret = xTimerDelete((xTimerHandle)timer, 10);
 	return ret;
 }
 
