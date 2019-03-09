@@ -412,6 +412,7 @@ tls_os_status_t tls_os_sem_delete(tls_os_sem_t *sem);
  * @note           None
  */
  tls_os_status_t tls_os_queue_create(tls_os_queue_t **queue, u32 queue_size);
+ tls_os_status_t tls_os_queue_create_static(tls_os_queue_t **queue, u32 queue_size, uint8_t *queue_storage);
 
 /**
  * @brief          This function deletes a message queue and readies all

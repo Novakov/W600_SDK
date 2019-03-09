@@ -74,8 +74,8 @@
 
 #define configCPU_CLOCK_HZ			( ( unsigned long ) 40000000 )	/* =12.0MHz xtal multiplied by 5 using the PLL. *///内部处理器执行频率
 
-#define configTICK_RATE_HZ			( ( portTickType ) 500u )	//时间片中断的频率
-#define configMAX_PRIORITIES		( ( unsigned portBASE_TYPE ) 63)	//应用程序中可用优先级的数目
+#define configTICK_RATE_HZ			( ( TickType_t ) 500u )	// Time slice interrupt frequency
+#define configMAX_PRIORITIES		32	// Number of priorities available in the application
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 90 )	//空闲任务使用的堆栈大小
 #define configTOTAL_HEAP_SIZE		( ( size_t ) 12 * 1024 )		//内核中可用的RAM数量,heap2使用
 #define configMAX_TASK_NAME_LEN		( 8 )	//创建任务名称最大允许长度
@@ -116,13 +116,21 @@ to exclude the API function. */
 #define configTIMER_TASK_STACK_DEPTH 200
 #define configCHECK_FOR_STACK_OVERFLOW 2
 
+#define configENABLE_BACKWARD_COMPATIBILITY 0
+#define configSUPPORT_STATIC_ALLOCATION 1
+#define configIDLE_TASK_SIZE 256
+
+//DEBUG
+#define configUSE_TRACE_FACILITY 1
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
 // --- ---
+
+#define configUSE_MALLOC_FAILED_HOOK 1
 
 // Cortex-M3 specific defines
 
 
-void portDISABLE_INTERRUPTS_WM(void);
-void portENABLE_INTERRUPTS_WM(void);
 void wmAssertCalled(const char * file, int line);
 
 

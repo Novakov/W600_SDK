@@ -30,7 +30,7 @@
 #include "timers.h"
 #include "wm_osal.h"
 #include "wm_mem.h"
-#include "wm_os_extras.h"
+
 /*
 *********************************************************************************************************
 *                                     CREATE A TASK (Extended Version)
@@ -82,8 +82,6 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
       u32 prio,
       u32 flag)
 {
-    u8 error;
-    tls_os_status_t os_status;
 	char backupNameBuffer[configMAX_TASK_NAME_LEN];
 	u32 internal_priority = configMAX_PRIORITIES - prio;
 
@@ -95,26 +93,30 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
     	return TLS_OS_ERROR;
     }
 
+	if (configMAX_PRIORITIES - prio <= 0)
+    {
+    	printf("\nCurrent task Priority (%d) below 0.\n", (u32)configMAX_PRIORITIES - prio);
+    	printf("Please refer to APIs' manual and modify priority!!!\n");
+    	return TLS_OS_ERROR;
+    }
+
+	u32 targetStackSize = stk_size - sizeof(StaticTask_t);
+
 	if (name == NULL)
 	{
 		snprintf(backupNameBuffer, configMAX_TASK_NAME_LEN, "%d", internal_priority);
 		name = backupNameBuffer;
 	}
 
-	error = xTaskCreateExt(entry,
-		(const signed char *)name,
-		(portSTACK_TYPE *)stk_start,
-		stk_size/sizeof(u32),
-		param,
-		internal_priority,	/*The priority is reversed, contrary to the ucos priority order*/
-		task	);
-	//printf("configMAX_PRIORITIES - prio:%d\n", internal_priority);
-    if (error == pdTRUE)
-        os_status = TLS_OS_SUCCESS;
-    else
-        os_status = TLS_OS_ERROR;
+	*task = xTaskCreateStatic(entry,
+							  name, 
+							  targetStackSize / sizeof(u32),
+							  param,
+							  internal_priority, /*The priority is reversed, contrary to the ucos priority order*/
+							  (StackType_t *)(stk_start + sizeof(StaticTask_t)),
+							  (StaticTask_t *)stk_start);
 
-    return os_status;
+	return TLS_OS_SUCCESS;
 }
 
 
@@ -136,7 +138,7 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 #if ( INCLUDE_vTaskDelete == 1 )
 tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 {	
-	vTaskDelete(task);	
+	vTaskDelete(*task);	
 	if (freefun){
 		freefun();
 	}
@@ -162,7 +164,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 */
  tls_os_status_t tls_os_task_suspend(tls_os_task_t *task)
 {
-	vTaskSuspend(task);
+	vTaskSuspend(*task);
 
 	return TLS_OS_SUCCESS;
 }
@@ -181,7 +183,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 */
  tls_os_status_t tls_os_task_resume(tls_os_task_t *task)
 {
-	vTaskResume(task);
+	vTaskResume(*task);
 
 	return TLS_OS_SUCCESS;
 }
@@ -258,7 +260,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 */
  tls_os_status_t tls_os_mutex_delete(tls_os_mutex_t *mutex)
 {
-	vSemaphoreDelete((xQueueHandle)mutex);
+	vSemaphoreDelete(mutex);
 
     return TLS_OS_SUCCESS;
 }
@@ -299,7 +301,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 		time = portMAX_DELAY;
 	else
 		time = wait_time;
-	error = xSemaphoreTake((xQueueHandle)mutex, time );
+	error = xSemaphoreTake(mutex, time );
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
     else
@@ -332,7 +334,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xSemaphoreGiveFromISR((xQueueHandle)mutex, &pxHigherPriorityTaskWoken );
+		error = xSemaphoreGiveFromISR(mutex, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD();
@@ -340,7 +342,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 	}
 	else
 	{
-		error = xSemaphoreGive((xQueueHandle)mutex );
+		error = xSemaphoreGive(mutex);
 	}
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
@@ -403,7 +405,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 */
  tls_os_status_t tls_os_sem_delete(tls_os_sem_t *sem)
 {
-	vSemaphoreDelete((xQueueHandle)sem);
+	vSemaphoreDelete(sem);
 
     return TLS_OS_SUCCESS;
 }
@@ -438,7 +440,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 		time = portMAX_DELAY;
 	else
 		time = wait_time;
-	error = xSemaphoreTake((xQueueHandle)sem, time );
+	error = xSemaphoreTake(sem, time );
     if (error == pdPASS)
         os_status = TLS_OS_SUCCESS;
     else
@@ -470,7 +472,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xSemaphoreGiveFromISR((xQueueHandle)sem, &pxHigherPriorityTaskWoken );
+		error = xSemaphoreGiveFromISR(sem, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD();
@@ -478,7 +480,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 	}
 	else
 	{
-		error = xSemaphoreGive((xQueueHandle)sem );
+		error = xSemaphoreGive(sem);
 	}
 	if (error == pdPASS)
 		os_status = TLS_OS_SUCCESS;
@@ -521,19 +523,38 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 {
     tls_os_status_t os_status;
 	u32 queuesize = 10;
-	void *queue_start = NULL;
 
 	if (queue_size)
 	{
 		queuesize = queue_size;
 	}
-	queue_start = tls_mem_alloc(queuesize *(sizeof(void *)));
-	if (NULL == queue_start)
+
+	*queue = xQueueCreate(queuesize, sizeof(void *));
+
+    if (*queue != NULL)
+        os_status = TLS_OS_SUCCESS;
+    else
+        os_status = TLS_OS_ERROR;
+
+    return os_status;
+}
+
+ tls_os_status_t tls_os_queue_create_static(tls_os_queue_t **queue, u32 queue_size, uint8_t *queue_storage)
+{
+    tls_os_status_t os_status;
+	u32 queuesize = 10;
+
+	if (queue_size)
 	{
-		return TLS_OS_ERROR;
+		queuesize = queue_size;
 	}
 
-	*queue = xQueueCreateExt(queue_start, queuesize, sizeof(void *));
+ 	u32 targetQueueSize = queuesize - (sizeof(StaticQueue_t) / sizeof(u32));
+
+	*queue = xQueueCreateStatic(targetQueueSize, 
+								sizeof(void *), 
+								queue_storage + sizeof(StaticQueue_t), 
+								(StaticQueue_t*)queue_storage);
 
     if (*queue != NULL)
         os_status = TLS_OS_SUCCESS;
@@ -560,12 +581,7 @@ tls_os_status_t tls_os_task_del(tls_os_task_t * task, void (*freefun)(void))
 extern u32 __heap_base;
  tls_os_status_t tls_os_queue_delete(tls_os_queue_t *queue)
 {
-	u32* queueStorageAddress = (u32*)xQueueGetStoragePointer((xQueueHandle)queue);
-	if (queueStorageAddress >= &__heap_base)		//If you don't apply from the heap, don't release it)
-	{
-		tls_mem_free(queueStorageAddress);
-	}
-	vQueueDeleteExt((xQueueHandle)queue);
+	vQueueDelete(queue);
 
     return TLS_OS_SUCCESS;
 }
@@ -597,7 +613,7 @@ extern u32 __heap_base;
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueSendFromISR((xQueueHandle) queue, &msg, &pxHigherPriorityTaskWoken );
+		error = xQueueSendFromISR(queue, &msg, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{			
 			portYIELD();
@@ -605,7 +621,7 @@ extern u32 __heap_base;
 	}
 	else
 	{
-		error = xQueueSend((xQueueHandle)queue, &msg, 0 );
+		error = xQueueSend(queue, &msg, 0 );
 	}
 
     if (error == pdPASS)
@@ -655,7 +671,7 @@ extern u32 __heap_base;
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueReceiveFromISR((xQueueHandle)queue, msg, &pxHigherPriorityTaskWoken);
+		error = xQueueReceiveFromISR(queue, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD();
@@ -663,7 +679,7 @@ extern u32 __heap_base;
 	}
 	else
 	{
-		error = xQueueReceive((xQueueHandle)queue, msg, xTicksToWait );
+		error = xQueueReceive(queue, msg, xTicksToWait );
 	}
 
     if (error == pdPASS)
@@ -752,7 +768,7 @@ Returns    : TLS_OS_SUCCESS
 
  tls_os_status_t tls_os_mailbox_delete(tls_os_mailbox_t *mailbox)
 {
-	vQueueDelete((xQueueHandle)mailbox);
+	vQueueDelete(mailbox);
 
     return TLS_OS_SUCCESS;
 }
@@ -783,7 +799,7 @@ Returns    : TLS_OS_SUCCESS
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueSendFromISR( (xQueueHandle)mailbox, &msg, &pxHigherPriorityTaskWoken );
+		error = xQueueSendFromISR(mailbox, &msg, &pxHigherPriorityTaskWoken );
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			vTaskSwitchContext();
@@ -791,7 +807,7 @@ Returns    : TLS_OS_SUCCESS
 	}
 	else
 	{
-		error = xQueueSend( (xQueueHandle)mailbox, &msg, 0 );
+		error = xQueueSend(mailbox, &msg, 0 );
 	}
 
     if (error == pdPASS)
@@ -839,7 +855,7 @@ Returns    : TLS_OS_SUCCESS
 	isrcount = tls_get_isr_count();
 	if(isrcount > 0)
 	{
-		error = xQueueReceiveFromISR((xQueueHandle)mailbox, msg, &pxHigherPriorityTaskWoken);
+		error = xQueueReceiveFromISR(mailbox, msg, &pxHigherPriorityTaskWoken);
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
 			portYIELD();
@@ -847,7 +863,7 @@ Returns    : TLS_OS_SUCCESS
 	}
 	else
 	{
-		error = xQueueReceive( (xQueueHandle)mailbox, msg, xTicksToWait );
+		error = xQueueReceive(mailbox, msg, xTicksToWait );
 	}
 
     if (error == pdPASS)
@@ -940,7 +956,7 @@ typedef struct _tls_os_timer_data {
 	void * timer_data;
 } tls_os_timer_data_t;
 
-static inline void tls_os_timer_internal_callback(xTimerHandle timer)
+static inline void tls_os_timer_internal_callback(TimerHandle_t timer)
 {
 	tls_os_timer_data_t * data = (tls_os_timer_data_t *) pvTimerGetTimerID(timer);
 	data->callback(timer, data->timer_data);
@@ -970,7 +986,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	internal_timer_data->callback = callback;
 	internal_timer_data->timer_data = callback_arg;
 
-	*timer = xTimerCreate( (const signed char *)name, period, repeat, internal_timer_data, tls_os_timer_internal_callback );
+	*timer = xTimerCreate((const char *)name, period, repeat, internal_timer_data, tls_os_timer_internal_callback );
 #endif
     if (*timer != NULL)
     {   
@@ -1003,7 +1019,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerStartFromISR((xTimerHandle)timer, &pxHigherPriorityTaskWoken );
+		xTimerStartFromISR(timer, &pxHigherPriorityTaskWoken);
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -1013,7 +1029,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	else
 	{
 #if configUSE_TIMERS
-		xTimerStart((xTimerHandle)timer, 0 );		//no block time
+		xTimerStart(timer, 0);		//no block time
 #endif
 	}
 }
@@ -1040,8 +1056,8 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerChangePeriodFromISR((xTimerHandle)timer, ticks, &pxHigherPriorityTaskWoken );
-		xTimerStartFromISR( (xTimerHandle)timer, &pxHigherPriorityTaskWoken );
+		xTimerChangePeriodFromISR(timer, ticks, &pxHigherPriorityTaskWoken );
+		xTimerStartFromISR(timer, &pxHigherPriorityTaskWoken );
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -1051,8 +1067,8 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	else
 	{
 #if configUSE_TIMERS
-		xTimerChangePeriod((xTimerHandle)timer, ticks, 0 );
-		xTimerStart((xTimerHandle)timer, 0 );
+		xTimerChangePeriod(timer, ticks, 0 );
+		xTimerStart(timer, 0 );
 #endif
 	}
 }
@@ -1075,7 +1091,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	if(isrcount > 0)
 	{
 #if configUSE_TIMERS
-		xTimerStopFromISR((xTimerHandle)timer, &pxHigherPriorityTaskWoken );
+		xTimerStopFromISR(timer, &pxHigherPriorityTaskWoken );
 #endif
 		if((pdTRUE == pxHigherPriorityTaskWoken) && (1 == isrcount))
 		{
@@ -1085,7 +1101,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	else
 	{
 #if configUSE_TIMERS
-		xTimerStop((xTimerHandle)timer, 0 );
+		xTimerStop(timer, 0 );
 #endif
 	}
 }
@@ -1108,7 +1124,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 	tls_os_timer_data_t * data = (tls_os_timer_data_t *) tls_os_timer_get_argument(timer);
 	tls_mem_free(data);
 	/* xTimer is already active - delete it. */
-	ret = xTimerDelete((xTimerHandle)timer, 10);
+	ret = xTimerDelete(timer, 10);
 	return ret;
 }
 
@@ -1125,7 +1141,7 @@ static inline void tls_os_timer_internal_callback(xTimerHandle timer)
 
 void * tls_os_timer_get_argument(tls_os_timer_t *timer)
 {
-	return pvTimerGetTimerID((xTimerHandle)timer);
+	return pvTimerGetTimerID(timer);
 }
 
 /*
@@ -1166,7 +1182,7 @@ void tls_os_disp_task_stat_info(void)
 	if(NULL == buf)
 		return;
 #if configUSE_TRACE_FACILITY
-	vTaskList((signed char *)buf);
+	vTaskList((char *)buf);
 #endif
 	printf("\n%s",buf);
 	tls_mem_free(buf);
@@ -1233,9 +1249,33 @@ int tls_os_get_type(void)
 *********************************************************************************************************
 */
 
-void tls_os_time_tick(void *p){
 
+#if configSUPPORT_STATIC_ALLOCATION
+/* static memory allocation for the IDLE task */
+static StaticTask_t xIdleTaskTCBBuffer;
+static StackType_t xIdleStack[configIDLE_TASK_SIZE];
+
+void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize) {
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+  *ppxIdleTaskStackBuffer = &xIdleStack[0];
+  *pulIdleTaskStackSize = configIDLE_TASK_SIZE;
 }
+#endif
+
+#if configSUPPORT_STATIC_ALLOCATION && configUSE_TIMERS
+static StaticTask_t xTimerTaskTCBBuffer;
+static StackType_t xTimerStack[configTIMER_TASK_STACK_DEPTH];
+
+/* If static allocation is supported then the application must provide the
+   following callback function - which enables the application to optionally
+   provide the memory that will be used by the timer task as the task's stack
+   and TCB. */
+void vApplicationGetTimerTaskMemory(StaticTask_t **ppxTimerTaskTCBBuffer, StackType_t **ppxTimerTaskStackBuffer, uint32_t *pulTimerTaskStackSize) {
+  *ppxTimerTaskTCBBuffer = &xTimerTaskTCBBuffer;
+  *ppxTimerTaskStackBuffer = &xTimerStack[0];
+  *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+#endif
 
 /**
  * @brief          	get isr count
@@ -1250,7 +1290,6 @@ void tls_os_time_tick(void *p){
 extern int portGET_IPSR(void);
 u8 tls_get_isr_count(void)
 {	 
-//    return intr_counter;
 	return (portGET_IPSR() > 13);
 }
 
