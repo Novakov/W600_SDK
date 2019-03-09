@@ -99,6 +99,21 @@ void tls_irq_enable(u8 vec_no)
 }
 
 /**
+ * @brief          	This function is used to set interrupt priority.
+ *
+ * @param[in]      	vec_no       interrupt no
+ * @param[in]      	priority     priority
+ *
+ * @return         	None
+ *
+ * @note           	None
+ */
+void tls_irq_set_priority(u8 vec_no, u8 priority)
+{
+    NVIC_SetPriority(vec_no, priority);
+}
+
+/**
  * @brief          	This function is used to disable interrupt.
  *
  * @param[in]      	vec_no       interrupt no

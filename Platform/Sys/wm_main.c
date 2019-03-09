@@ -164,6 +164,11 @@ void wm_gpio_config()
 	wm_spi_do_config(WM_IO_PB_18);
 }
 
+void tls_fix_wifi_irq_priority()
+{
+	tls_irq_set_priority(RX_INT, IRQ_MAX_SYSCALL_PRIORITY);
+}
+
 int main(void)
 {
 	SystemInit();
@@ -180,8 +185,8 @@ int main(void)
 		tls_os_task_create(NULL, NULL,
 	                    task_start,
 	                    (void *)0,
-	                    (void *)&TaskStartStk[0],          /* 任务栈的起始地址 */
-	                    TASK_START_STK_SIZE * sizeof(u32), /* 任务栈的大小     */
+	                    (void *)&TaskStartStk[0],          /* 膶脦脦艅艕禄碌脛膯膽臉慕碌艠脰路 */
+	                    TASK_START_STK_SIZE * sizeof(u32), /* 膶脦脦艅艕禄碌脛麓贸膼藝     */
 	                    1,
 	                    0);
 	}
@@ -264,6 +269,8 @@ void task_start (void *data)
 	if (wpa_supplicant_init(mac_addr)) {
 		TLS_DBGPRT_INFO("supplicant initial failured\n");
 	}
+
+	tls_fix_wifi_irq_priority();
 
 	tls_ethernet_init();
 
