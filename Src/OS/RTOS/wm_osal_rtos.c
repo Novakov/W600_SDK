@@ -84,6 +84,8 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
 {
     u8 error;
     tls_os_status_t os_status;
+	char backupNameBuffer[configMAX_TASK_NAME_LEN];
+	u32 internal_priority = configMAX_PRIORITIES - prio;
 
     if (((u32)stk_start >= TASK_STACK_USING_MEM_UPPER_RANGE) 
 		||(((u32)stk_start + stk_size) >= TASK_STACK_USING_MEM_UPPER_RANGE))
@@ -93,14 +95,20 @@ tls_os_status_t tls_os_task_create(tls_os_task_t *task,
     	return TLS_OS_ERROR;
     }
 
+	if (name == NULL)
+	{
+		snprintf(backupNameBuffer, configMAX_TASK_NAME_LEN, "%d", internal_priority);
+		name = backupNameBuffer;
+	}
+
 	error = xTaskCreateExt(entry,
 		(const signed char *)name,
 		(portSTACK_TYPE *)stk_start,
 		stk_size/sizeof(u32),
 		param,
-		configMAX_PRIORITIES - prio,	/*优先级颠倒一下，与ucos优先级顺序相反*/
+		internal_priority,	/*The priority is reversed, contrary to the ucos priority order*/
 		task	);
-	//printf("configMAX_PRIORITIES - prio:%d\n", configMAX_PRIORITIES - prio);
+	//printf("configMAX_PRIORITIES - prio:%d\n", internal_priority);
     if (error == pdTRUE)
         os_status = TLS_OS_SUCCESS;
     else
@@ -926,6 +934,18 @@ u32 os_cnter = 0;
 *			TLS_OS_ERROR
 ************************************************************************************************************************
 */
+
+typedef struct _tls_os_timer_data {
+	TLS_OS_TIMER_CALLBACK callback;
+	void * timer_data;
+} tls_os_timer_data_t;
+
+static inline void tls_os_timer_internal_callback(xTimerHandle timer)
+{
+	tls_os_timer_data_t * data = (tls_os_timer_data_t *) pvTimerGetTimerID(timer);
+	data->callback(timer, data->timer_data);
+}
+
  tls_os_status_t tls_os_timer_create(tls_os_timer_t **timer,
         TLS_OS_TIMER_CALLBACK callback,
         void *callback_arg,
@@ -940,7 +960,17 @@ u32 os_cnter = 0;
 		period = 1;
 	}
 #if configUSE_TIMERS
-	*timer = (xTimerHandle)xTimerCreateExt( (signed char *)name, period, repeat, NULL, callback, callback_arg );
+	tls_os_timer_data_t * internal_timer_data = tls_mem_alloc(sizeof(tls_os_timer_data_t));
+	if (NULL == internal_timer_data)
+	{
+		printf("tls_os_timer_create: failed to alloc data for timer\n");
+		return TLS_OS_ERROR;
+	}
+
+	internal_timer_data->callback = callback;
+	internal_timer_data->timer_data = callback_arg;
+
+	*timer = xTimerCreate( (const signed char *)name, period, repeat, internal_timer_data, tls_os_timer_internal_callback );
 #endif
     if (*timer != NULL)
     {   
@@ -1074,11 +1104,29 @@ u32 os_cnter = 0;
  int tls_os_timer_delete(tls_os_timer_t *timer)
 {
 	int ret = 0;
+
+	tls_os_timer_data_t * data = (tls_os_timer_data_t *) tls_os_timer_get_argument(timer);
+	tls_mem_free(data);
 	/* xTimer is already active - delete it. */
 	ret = xTimerDelete((xTimerHandle)timer, 10);
 	return ret;
 }
 
+/*
+************************************************************************************************************************
+*                                                   Gets TIMER argument
+*
+* Description: This function is called by your application code to get custom argument stored in timer.
+*
+* Arguments  : timer          Is a pointer to the timer extract argument.
+*
+************************************************************************************************************************
+*/
+
+void * tls_os_timer_get_argument(tls_os_timer_t *timer)
+{
+	return pvTimerGetTimerID((xTimerHandle)timer);
+}
 
 /*
 *********************************************************************************************************

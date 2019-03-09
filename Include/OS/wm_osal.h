@@ -673,6 +673,18 @@ tls_os_status_t tls_os_queue_flush(tls_os_queue_t *queue);
 int tls_os_timer_delete(tls_os_timer_t *timer);
 
 /**
+ * @brief          This function is called by your application code to
+                   get custom argument stored in timer
+ *
+ * @param[in]      *timer    pointer to the timer to extract argument
+ *
+ * @retval         Argument
+ *
+ * @note           None
+ */
+void * tls_os_timer_get_argument(tls_os_timer_t *timer);
+
+/**
  * @brief          This function is called to delay execution of the currently
                    running task until the specified number of system
                    ticks expires. This, of course, directly equates to
