@@ -499,10 +499,11 @@ portTickType xTimeNow;
 
 	/* In this case the xTimerListsWereSwitched parameter is not used, but it
 	must be present in the function call. */
-	xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
+	//xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
 
 	while( xQueueReceive( xTimerQueue, &xMessage, tmrNO_DELAY ) != pdFAIL )
 	{
+		xTimeNow = prvSampleTimeNow( &xTimerListsWereSwitched );
 		pxTimer = xMessage.pxTimer;
 
 		/* Is the timer already in a list of active timers?  When the command
