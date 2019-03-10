@@ -1798,7 +1798,7 @@ static void coap_retransmittimer_restart(coap_context_t *ctx)
 			delay = 0;
 		}
 
-		printf("scheduling for %d ticks\n", delay);
+		printf("scheduling for %ld ticks\n", delay);
 		sys_timeout(delay, coap_retransmittimer_execute, (void*)ctx);
 		ctx->timer_configured = 1;
 	}

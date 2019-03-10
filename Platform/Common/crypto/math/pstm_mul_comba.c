@@ -31,6 +31,7 @@
  */
 /******************************************************************************/
 
+#include "core/coreApi.h"
 #include "../cryptoApi.h"
 #ifndef DISABLE_PSTM
 

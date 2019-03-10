@@ -252,7 +252,7 @@ coap_print_addr(const struct coap_address_t *addr, unsigned char *buf, size_t le
   return p - buf;
 # else /* WITH_CONTIKI */
   /* TODO: output addresses manually */
-#   warning "inet_ntop() not available, network addresses will not be included in debug output"
+#   pragma message "inet_ntop() not available, network addresses will not be included in debug output"
 # endif /* WITH_CONTIKI */
   return 0;
 #endif

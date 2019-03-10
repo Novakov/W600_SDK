@@ -11,7 +11,11 @@
 
 #include "wm_wifi.h"
 #include "tls_common.h"
+#if (GCC_COMPILE==1)
+#include "wm_ieee80211_gcc.h"
+#else
 #include "wm_ieee80211.h"
+#endif
 
 
 

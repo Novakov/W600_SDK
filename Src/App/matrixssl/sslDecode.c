@@ -1419,7 +1419,7 @@ static int32 parseSSLHandshake(ssl_t *ssl, char *inbuf, uint32 len)
 #endif
 #ifndef USE_ONLY_PSK_CIPHER_SUITE
 	uint32				sigAlgMatch;
-#if defined(USE_SERVER_SIDE_SSL) || defined(USE_CLIENT_AUTH)
+#if (defined(USE_SERVER_SIDE_SSL) && defined(VALIDATE_KEY_MATERIAL)) || defined(USE_CLIENT_AUTH)
 	uint32				hashSigAlg;
 #endif /* USE_SERVER_SIDE */
 #endif /* ! ONLY_PSK  */

@@ -65,7 +65,7 @@ void tls_adc_init(u8 ifusedma,u8 dmachannel)
 //注册中断和channel有关，所以需要先请求
 	if(ifusedma)
 	{
-		gst_adc.dmachannel = tls_dma_request(dmachannel, NULL);	//请求dma，不要直接指定，因为请求的dma可能会被别的任务使用
+		gst_adc.dmachannel = tls_dma_request(dmachannel, 0);	//Request dma, do not specify directly, because the requested dma may be used by other tasks
 		tls_dma_irq_register(gst_adc.dmachannel, (void(*)(void*))adc_dma_isr_callbk, NULL, TLS_DMA_IRQ_TRANSFER_DONE);
 	}
 
@@ -486,7 +486,7 @@ u16 adc_get_interVolt(void)
   tls_adc_stop(0);
 
   signedToUnsignedData(&voltValue, &adc_offset);
-  float voltage = ( 1.214 - ((float)voltValue-8192)/8192*2.25/1.2 )*2;
+  //float voltage = ( 1.214 - ((float)voltValue-8192)/8192*2.25/1.2 )*2;
   //printf("\r\ninterVolt:%.2f", voltage);
   return voltValue;
 }

@@ -3857,8 +3857,9 @@ STATIC_INLINE void	Time96_Sub( Time96 *inTime, const Time96 *inSub )
 	kANSIHighBackWhite		"kANSIHighBackWhite"		kANSINormal " (kANSIHighBackWhite)\n" \
 	kANSIHighBackReset		"kANSIHighBackReset"		kANSINormal "\n"
 
-
+#ifndef PATH_MAX
 #define PATH_MAX 512
+#endif
 
 
 #endif	// __APSCommonServices_h__

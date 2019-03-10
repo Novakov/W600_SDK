@@ -117,6 +117,7 @@ int net_set_nonblock( int fd );
  */
 void net_usleep( unsigned long usec );
 
+#if TLS_CONFIG_HTTP_CLIENT_SECURE
 /**
  * \brief          Read at most 'len' characters. If no error occurs,
  *                 the actual amount read is returned.
@@ -144,6 +145,7 @@ static int net_recv( void *ctx, unsigned char *buf, size_t len );
  *                 indicates write() is blocking.
  */
 static int net_send( void *ctx, const unsigned char *buf, size_t len );
+#endif
 
 /**
  * \brief          Gracefully shutdown the connection

@@ -103,10 +103,10 @@ iperf_handle_message_client(struct iperf_test *test)
         case SERVER_TERMINATE:
             i_errno = IESERVERTERM;
             return (-1);
-        case ACCESS_DENIED:
+        case (char)ACCESS_DENIED:
             i_errno = IEACCESSDENIED;
             return (-1);
-        case SERVER_ERROR:
+        case (char)SERVER_ERROR:
             if (Nread(test->ctrl_sck, &i_errno, sizeof(i_errno), Ptcp) < 0) {
                 i_errno = IECTRLREAD;
                 return (-1);

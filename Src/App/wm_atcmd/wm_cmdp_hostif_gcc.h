@@ -407,7 +407,7 @@ typedef struct _HOSTIF_CMD_PARAMS_FLSW {
 
 typedef struct _HOSTIF_CMD_PARAMS_UPDM {
     u8      mode;
-    u8      src;/* 标识来自at 0, 还是ri 1 */
+    u8      src;/* 卤臋臉露艛麓脳脭at 0, 禄膮臉脟ri 1 */
 }__attribute__((packed))HOSTIF_CMD_PARAMS_UPDM;
 
 typedef struct _HOSTIF_CMD_PARAMS_UPDD {
@@ -1397,7 +1397,9 @@ void tls_hostif_http_client_err_callback(HTTP_SESSION_HANDLE session, int err);
 #endif
 int atcmd_err_resp(char *buf, int err_code);
 int atcmd_ok_resp(char *buf);
+#if TLS_CONFIG_AP
 static int atcmd_nop_proc(struct tls_atcmd_token_t *tok, char *res_resp, u32 *res_len);
+#endif
 
 int tls_atcmd_parse(struct tls_atcmd_token_t *tok, char *buf, u32 len);
 int tls_hostif_atcmd_exec(

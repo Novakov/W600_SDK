@@ -296,11 +296,13 @@ static    UINT32                  HTTPIntrnGetRemoteHeaders     (P_HTTP_SESSION 
 static    UINT32                  HTTPIntrnGetRemoteChunkLength (P_HTTP_SESSION pHTTPSession);
 static    UINT32                  HTTPIntrnSend                 (P_HTTP_SESSION pHTTPSession, CHAR *pData,UINT32 *nLength);
 static    UINT32                  HTTPIntrnRecv                 (P_HTTP_SESSION pHTTPSession, CHAR *pData,UINT32 *nLength,BOOL PeekOnly);
+#if TLS_CONFIG_HTTP_CLIENT_AUTH
 static    UINT32                  HTTPIntrnParseAuthHeader      (P_HTTP_SESSION pHTTPSession);
 static    UINT32                  HTTPIntrnAuthHandler          (P_HTTP_SESSION pHTTPSession);
 static    UINT32                  HTTPIntrnAuthSendDigest       (P_HTTP_SESSION pHTTPSession);
 static    UINT32                  HTTPIntrnAuthSendBasic        (P_HTTP_SESSION pHTTPSession);
 static    UINT32                  HTTPIntrnAuthenticate         (P_HTTP_SESSION pHTTPSession);
+#endif
 static    UINT32                  HTTPIntrnHeadersAdd           (P_HTTP_SESSION pHTTPSession, CHAR *pHeaderName, UINT32 nNameLength, CHAR *pHeaderData, UINT32 nDataLength);
 static    UINT32                  HTTPIntrnHeadersRemove        (P_HTTP_SESSION pHTTPSession, CHAR *pHeaderName);
 static    UINT32                  HTTPIntrnHeadersReceive       (P_HTTP_SESSION pHTTPSession, UINT32 nTimeout);

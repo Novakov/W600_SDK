@@ -14,7 +14,9 @@
 typedef char HASH[HASHLEN];
 typedef char HASHHEX[HASHHEXLEN+1];
 //typedef unsigned long uint32;
+#ifndef isascii
 #define isascii(_Char)   ( (unsigned)(_Char) < 0x80 )
+#endif
 // Base 64 Related 
 #define DECODE64(c)  (isascii(c) ? base64val[c] : BAD)
 #define BAD     0xFF //-1
