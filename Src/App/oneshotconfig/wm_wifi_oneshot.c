@@ -420,7 +420,9 @@ u8 tls_wifi_decrypt_data(u8 *data){
 	u16 datatype;
 	u32 tagid = 0;
 	u16 typelen[6]={0,0,0,0,0,0};
+#if TLS_CONFIG_AP_MODE_ONESHOT	
 	volatile u16 rawlen = 0;
+#endif	
     u16 hdrlen = sizeof(struct ieee80211_hdr);
 	int i = 0;
 	int tmpLen = 0;
@@ -440,7 +442,9 @@ u8 tls_wifi_decrypt_data(u8 *data){
 			}
 
 		}
+#if TLS_CONFIG_AP_MODE_ONESHOT
 		rawlen = *((u16 *)(data+tmpLen));
+#endif
 		tmpLen += 2;
 
 		gucssidokflag = 0;

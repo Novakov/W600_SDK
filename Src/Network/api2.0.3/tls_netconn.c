@@ -677,7 +677,7 @@ static err_t net_tcp_accept_cb(void *arg,
     pcb = newconn->pcb.tcp;
     ip_set_option(newconn->pcb.tcp, SOF_KEEPALIVE);
     newconn->skd = conn->skd;
-    tcp_arg(pcb, (void *)(newconn->skt_num));
+    tcp_arg(pcb, (void *)(intptr_t)(newconn->skt_num));
     tcp_recv(pcb, net_tcp_recv_cb);
     //tcp_sent(pcb, net_tcp_sent_cb);
     tcp_poll(pcb, net_tcp_poll_cb, 2);
@@ -786,7 +786,7 @@ static err_t net_tcp_start(struct tls_netconn *conn)
         return ERR_VAL;
     }
 
-    tcp_arg(pcb, (void *)(conn->skt_num));
+    tcp_arg(pcb, (void *)(intptr_t)(conn->skt_num));
 
     if (conn->client) {
         TLS_DBGPRT_INFO("pcb = 0x%x, conn->addr = 0x%x, port = %d, localport=%d\n",
@@ -834,7 +834,7 @@ static err_t net_tcp_start(struct tls_netconn *conn)
             TLS_DBGPRT_INFO("tcp listen failed\n");
             return ERR_VAL;
         }
-		tcp_arg(conn->pcb.tcp, (void *)(conn->skt_num));
+		tcp_arg(conn->pcb.tcp, (void *)(intptr_t)(conn->skt_num));
         tcp_accept(conn->pcb.tcp, net_tcp_accept_cb);
     }
 
@@ -865,7 +865,7 @@ static err_t net_udp_start(struct tls_netconn *conn)
 	}
 	
     /* Set a receive callback for the upcb */
-    udp_recv(udppcb, net_udp_recv_cb, (void *)(conn->skt_num));
+    udp_recv(udppcb, net_udp_recv_cb, (void *)(intptr_t)(conn->skt_num));
 
     return ERR_OK;
 }

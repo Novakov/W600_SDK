@@ -55,8 +55,8 @@ void Uart0Init(void)
 	apbclk = sysclk.apbclk * 1000000;
 
 /* baud rate register value = apb_clk/(16*115200) */
-/* 如果APB时钟是40MHz， */
-/* 波特率寄存器的值设置为 115200 : 21 */
+/* 膶莽膮疟APB臉卤脰脫臉脟40MHz艁卢 */
+/* 藳篓臍艠脗臉慕脛麓膰膯梅碌脛脰碌脡膷脰膫脦艦 115200 : 21 */
 /* 9600bps : 260 */
     {
         bd = (apbclk / (16 * 115200) -
@@ -86,8 +86,8 @@ void UartRegInit(int uart_no)
 	apbclk = sysclk.apbclk * 1000000;
 
 /* baud rate register value = apb_clk/(16*115200) */
-/* 如果APB时钟是40MHz， */
-/* 波特率寄存器的值设置为 115200 : 21 */
+/* 膶莽膮疟APB臉卤脰脫臉脟40MHz艁卢 */
+/* 藳篓臍艠脗臉慕脛麓膰膯梅碌脛脰碌脡膷脰膫脦艦 115200 : 21 */
 /* 9600bps : 260 */
     if (TLS_UART_0 == uart_no)
     {
@@ -159,7 +159,9 @@ int tls_uart_set_baud_rate_inside(struct tls_uart_port *port, u32 baudrate)
 
     index = tls_uart_check_baudrate(baudrate);
     if (index < 0)
-        return WM_FAILED;
+    {
+            return WM_FAILED;
+    }
 	tls_sys_clk_get(&sysclk);
 	apbclk = sysclk.apbclk * 1000000;
     value = (apbclk / (16 * baudrate) - 1) |
@@ -265,7 +267,7 @@ TLS_UART_STATUS_T tls_uart_set_flow_ctrl(struct tls_uart_port * port,
         return TLS_UART_STATUS_ERROR;
 
 // port->opts.flow_ctrl = flow_ctrl;
-// //不能在这里修改，为了配合透传和AT指令，软件会自己修改flowctrl配置，但是参数还是固定不变的
+// //藳禄脛脺脭脷艕芒艛膹膼泞赂脛艁卢脦艦脕脣墓盲艧膸脥赂麓芦艧脥AT脰赂脕卯艁卢膶铆慕牛禄谩脳脭慕艧膼泞赂脛flowctrl墓盲脰膫艁卢碌芦臉脟藳脦臉媒禄膮臉脟膮臍露篓藳禄卤盲碌脛
 //printf("\nport %d flow ctrl==%d\n",port->uart_no,flow_ctrl);
     switch (flow_ctrl)
     {
@@ -305,7 +307,7 @@ void tls_uart_set_fc_status(int uart_no, TLS_UART_FLOW_CTRL_MODE_T status)
     port->fcStatus = status;
     //printf("\nset fc status=%d\n",status);
     tls_uart_set_flow_ctrl(port, status);
-    if (TLS_UART_FLOW_CTRL_HARDWARE == port->opts.flow_ctrl && 0 == status && port->hw_stopped) // 准备关闭流控时，发现tx已经停止，需要再打开tx
+    if (TLS_UART_FLOW_CTRL_HARDWARE == port->opts.flow_ctrl && 0 == status && port->hw_stopped) // 脳慕卤赂膮艠卤艕脕梅偶艠臉卤艁卢路藰膸脰tx艊艃木颅脥艁脰膮艁卢膼膷艊艦脭女麓艌偶艦tx
     {
         tls_uart_tx_enable(port);
         tls_uart_tx_chars(port);
@@ -365,7 +367,7 @@ int tls_uart_config(struct tls_uart_port *port, struct tls_uart_options *opts)
     tls_uart_set_flow_ctrl(port, opts->flow_ctrl);
 
 /* config uart interrupt register */
-/*    if (port->uart_mode == TLS_UART_MODE_INT) */// 默认使用中断的方式
+/*    if (port->uart_mode == TLS_UART_MODE_INT) */// 脛卢膶膸臉膮脫膫脰膼露膸碌脛路藵臉藵
     {
     /* clear interrupt */
         port->regs->UR_INTS = 0xFFFFFFFF;
@@ -549,7 +551,7 @@ void tls_uart_tx_chars_start(struct tls_uart_port *port)
         tx_msg = dl_list_first(pending_list, tls_uart_tx_msg_t, list);
         while (tx_count-- > 0 && tx_msg->offset < tx_msg->buflen)
         {
-        /* 检查tx fifo是否已满 */
+        /* 慕臎藳茅tx fifo臉脟路艅艊艃脗煤 */
             if ((port->regs->UR_FIFOS & UFS_TX_FIFO_CNT_MASK) ==
                 port->tx_fifofull)
             {
@@ -614,7 +616,7 @@ static void tls_uart_tx_chars(struct tls_uart_port *port)
         tx_msg = dl_list_first(pending_list, tls_uart_tx_msg_t, list);
         while (tx_count-- > 0 && tx_msg->offset < tx_msg->buflen)
         {
-        /* 检查tx fifo是否已满 */
+        /* 慕臎藳茅tx fifo臉脟路艅艊艃脗煤 */
             if ((port->regs->UR_FIFOS & UFS_TX_FIFO_CNT_MASK) ==
                 port->tx_fifofull)
             {
@@ -691,7 +693,7 @@ void tls_set_uart_rx_status(int uart_no, int status)
                 && (TLS_UART_FLOW_CTRL_HARDWARE == port->fcStatus))
             {
                 cpu_sr = tls_os_set_critical();
-                // 关rxfifo trigger level interrupt和overrun error
+                // 膮艠rxfifo trigger level interrupt艧脥overrun error
                 port->regs->UR_INTM |= ((0x1 << 2) | (0x01 << 8));
                 port->rxstatus = TLS_UART_RX_DISABLE;
                 tls_os_release_critical(cpu_sr);
@@ -746,7 +748,7 @@ void UART0_IRQHandler(void)
                 if (TLS_UART_FLOW_CTRL_HARDWARE == port->fcStatus)
                 {
                     tls_set_uart_rx_status(port->uart_no, TLS_UART_RX_DISABLE);
-                    rx_fifocnt = 0; // 如果有硬件流控，关闭接收，把最后一个字符放进环形buffer中
+                    rx_fifocnt = 0; // 膶莽膮疟脫膼脫藳慕牛脕梅偶艠艁卢膮艠卤艕藵脫臉艕艁卢掳艃脳卯艧贸艊禄赂枚脳脰路疟路墓藵艡禄路膼脦buffer脰膼
                 }
                 else
                     break;
@@ -910,7 +912,7 @@ void UART2_IRQHandler(void)
                 if (TLS_UART_FLOW_CTRL_HARDWARE == port->fcStatus)
                 {
                     tls_set_uart_rx_status(port->uart_no, TLS_UART_RX_DISABLE);
-                    rx_fifocnt = 0; // 如果有硬件流控，关闭接收，把最后一个字符放进环形buffer中
+                    rx_fifocnt = 0; // 膶莽膮疟脫膼脫藳慕牛脕梅偶艠艁卢膮艠卤艕藵脫臉艕艁卢掳艃脳卯艧贸艊禄赂枚脳脰路疟路墓藵艡禄路膼脦buffer脰膼
                 }
                 else
                     break;
@@ -1107,7 +1109,7 @@ int tls_uart_read(u16 uart_no, u8 * buf, u16 readsize)
     {
         buflen = readsize;
     }
-    else                        // 如果数据不够，直接返回0
+    else                        // 膶莽膮疟臉媒木脻藳禄膮禄艁卢脰卤藵脫路碌禄艠0
     {
         return 0;
     }
@@ -1263,7 +1265,7 @@ static s16 tls_uart_tx_cb(struct tls_uart_port *port)
 
     if (NULL == port)
         return WM_FAILED;
-    if (port->buf_len > 0)      // uart1,缓冲区数据传输完成之后，剩余的待传的数据再放入缓冲区
+    if (port->buf_len > 0)      // uart1,禄艧艂暮脟艡臉媒木脻麓芦臉盲脥臋艂脡脰庐艧贸艁卢臉艁脫艜碌脛麓媒麓芦碌脛臉媒木脻脭女路墓膶毛禄艧艂暮脟艡
     {
         ret_len = tls_uart_fill_buf(port, port->buf_ptr, port->buf_len);
     // TLS_DBGPRT_INFO("\ntx cb write len=%d",ret_len);
@@ -1324,7 +1326,7 @@ int tls_uart_dma_write(char *buf, u16 writesize, void (*cmpl_callback) (void *p)
         return WM_FAILED;
     }
 	tls_reg_write32((int)&port->regs->UR_DMAC, (tls_reg_read32((int)&port->regs->UR_DMAC) & ~0x01));
-    tls_dma_irq_register(dmaCh, cmpl_callback, (void *)uart_no, TLS_DMA_IRQ_TRANSFER_DONE);
+    tls_dma_irq_register(dmaCh, cmpl_callback, (void *)(intptr_t)uart_no, TLS_DMA_IRQ_TRANSFER_DONE);
     DmaDesc.src_addr = (int) buf;
     DmaDesc.dest_addr = (int)&port->regs->UR_TXW;
 	DmaDesc.dma_ctrl = TLS_DMA_DESC_CTRL_SRC_ADD_INC | TLS_DMA_DESC_CTRL_DATA_SIZE_BYTE |
