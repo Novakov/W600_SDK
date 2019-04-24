@@ -60,6 +60,8 @@
 #define   GPIOB_INT                 (40UL)
 #define   UART2_INT					(41UL)	
 
+#define IRQ_MAX_SYSCALL_PRIORITY 0x0B
+
 typedef void (*intr_handler_func) (void *);
 
 /**
@@ -128,6 +130,18 @@ void tls_irq_register_handler(u8 vec_no, intr_handler_func handler, void *data);
  * @note           None
  */
 void tls_irq_enable(u8 vec_no);
+
+/**
+ * @brief          	This function is used to set interrupt priority.
+ *
+ * @param[in]      	vec_no       interrupt no
+ * @param[in]      	priority     priority
+ *
+ * @return         	None
+ *
+ * @note           	None
+ */
+void tls_irq_set_priority(u8 vec_no, u8 priority);
 
 /**
  * @brief          This function is used to disable interrupt.

@@ -53,7 +53,10 @@ typedef unsigned char INT8U;
 #endif
 typedef signed char INT8S;
 
+#ifndef __cplusplus
 typedef unsigned char        bool;
+#endif
+
 typedef unsigned char        u8;
 typedef signed char          s8;
 typedef unsigned short       u16;
@@ -120,8 +123,11 @@ typedef unsigned int mem_ptr_t;
 #endif
 #define FALSE                    0
 
+
+#ifndef __cplusplus
 #define true				1
 #define false				0
+#endif
 
 #define WM_SUCCESS               0
 #define WM_FAILED               -1

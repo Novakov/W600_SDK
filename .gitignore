@@ -1,0 +1,6 @@
+/build
+*.o
+/Lib/GNU/*.a
+/Bin/W600.*
+/Bin/W600_*
+/Tools/GNU/W600.*

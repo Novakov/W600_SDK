@@ -41,7 +41,7 @@ C_SRC			+= ssl-client.c
 # Implicit rules
 #---------------------------------------------------------------------------
 .c.o:
-	$(CC) $(CFLAGS) -c -o $*.o $< $(INCLUDES)
+	$(CC) $(CFLAGS) -c -o $*.o $< $(INCLUDES)  -DLWIP_PROVIDE_ERRNO=1
 
 .s.o:
 	$(ASM) $(ASMFLAGS) -c -o $*.o $< $(INCLUDES)

@@ -74,8 +74,8 @@
 
 #define configCPU_CLOCK_HZ			( ( unsigned long ) 40000000 )	/* =12.0MHz xtal multiplied by 5 using the PLL. *///内部处理器执行频率
 
-#define configTICK_RATE_HZ			( ( portTickType ) 500u )	//时间片中断的频率
-#define configMAX_PRIORITIES		( ( unsigned portBASE_TYPE ) 63)	//应用程序中可用优先级的数目
+#define configTICK_RATE_HZ			( ( TickType_t ) 500u )	// Time slice interrupt frequency
+#define configMAX_PRIORITIES		32	// Number of priorities available in the application
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 90 )	//空闲任务使用的堆栈大小
 #define configTOTAL_HEAP_SIZE		( ( size_t ) 12 * 1024 )		//内核中可用的RAM数量,heap2使用
 #define configMAX_TASK_NAME_LEN		( 8 )	//创建任务名称最大允许长度
@@ -104,5 +104,57 @@ to exclude the API function. */
 
 #define configUSE_MUTEXES                   1 //使用互斥锁
 #define INCLUDE_xTaskGetCurrentTaskHandle   1 //可以获取当前任务
+
+#define INCLUDE_xTaskGetIdleTaskHandle 1
+#define INCLUDE_uxTaskGetStackHighWaterMark 1
+#define configUSE_TIMERS 1
+#define configUSE_COUNTING_SEMAPHORES 1
+#define configUSE_MAILBOX 1
+
+#define configTIMER_TASK_PRIORITY	1
+#define configTIMER_QUEUE_LENGTH	50
+#define configTIMER_TASK_STACK_DEPTH 200
+#define configCHECK_FOR_STACK_OVERFLOW 2
+
+#define configENABLE_BACKWARD_COMPATIBILITY 0
+#define configSUPPORT_STATIC_ALLOCATION 1
+#define configIDLE_TASK_SIZE 256
+
+//DEBUG
+#define configUSE_TRACE_FACILITY 1
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+// --- ---
+
+#define configUSE_MALLOC_FAILED_HOOK 1
+
+// Cortex-M3 specific defines
+
+
+void wmAssertCalled(const char * file, int line);
+
+
+#define configASSERT(x) if( ( x ) == 0 ) wmAssertCalled( __FILE__, __LINE__ )
+
+/* Cortex-M specific definitions. */
+#ifdef __NVIC_PRIO_BITS
+/* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
+#define configPRIO_BITS __NVIC_PRIO_BITS
+#else
+#define configPRIO_BITS 4 /* 7 priority levels */
+#endif
+
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY 0x0F
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY 0x0B
+
+#define configKERNEL_INTERRUPT_PRIORITY (configLIBRARY_LOWEST_INTERRUPT_PRIORITY << (8 - configPRIO_BITS))
+/* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
+See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY              \
+    (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS)) /* equivalent to 0xb0, or priority 11. */
+
+#define vPortSVCHandler SVC_Handler
+#define xPortPendSVHandler PendSV_Handler
+#define xPortSysTickHandler OS_CPU_SysTickHandler
 
 #endif /* FREERTOS_CONFIG_H */

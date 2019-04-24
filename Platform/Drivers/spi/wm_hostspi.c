@@ -1323,6 +1323,7 @@ int tls_spi_init(void)
     TLS_DBGPRT_SPI_INFO("register spi master interrupt handler.\n");
 
     tls_irq_enable(SPI0_INT);
+    tls_irq_set_priority(SPI0_INT, IRQ_MAX_SYSCALL_PRIORITY);
 
     TLS_DBGPRT_SPI_INFO("spi master driver module initialization finish.\n");
 
