@@ -225,16 +225,6 @@ dns_timer(void *arg)
 }
 #endif /* LWIP_DNS */
 
-#if TLS_CONFIG_AP_OPT_FWD
-static void
-alg_timer(void *arg)
-{
-  LWIP_DEBUGF(TIMERS_DEBUG, ("tcpip: alg_tmr(), type: %u\n", (u32)arg));
-  alg_napt_event_handle((u32)arg);
-  sys_timeout(NAPT_TMR_INTERVAL, alg_timer, arg);
-}
-#endif 
-
 #if LWIP_IPV6
 /**
  * Timer callback function that calls nd6_tmr() and reschedules itself.
@@ -307,12 +297,6 @@ void sys_timeouts_init(void)
 #if LWIP_DNS
   sys_timeout(DNS_TMR_INTERVAL, dns_timer, NULL);
 #endif /* LWIP_DNS */
-#if TLS_CONFIG_AP_OPT_FWD
-  sys_timeout(NAPT_TMR_INTERVAL, alg_timer, (void *)NAPT_TMR_TYPE_TCP);
-  sys_timeout(NAPT_TMR_INTERVAL, alg_timer, (void *)NAPT_TMR_TYPE_UDP);
-  sys_timeout(NAPT_TMR_INTERVAL, alg_timer, (void *)NAPT_TMR_TYPE_ICMP);
-  sys_timeout(NAPT_TMR_INTERVAL, alg_timer, (void *)NAPT_TMR_TYPE_GRE);
-#endif /* TLS_CONFIG_APSTA */
 #if LWIP_IPV6
   sys_timeout(ND6_TMR_INTERVAL, nd6_timer, NULL);
 #if LWIP_IPV6_REASS

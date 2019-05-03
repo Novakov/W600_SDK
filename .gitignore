@@ -1,6 +1,10 @@
 /build
 *.o
+*.d
+*.crf
 /Lib/GNU/*.a
 /Bin/W600.*
 /Bin/W600_*
 /Tools/GNU/W600.*
+/.vscode
+*.bak

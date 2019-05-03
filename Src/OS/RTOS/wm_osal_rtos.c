@@ -918,7 +918,7 @@ u32 os_cnter = 0;
 {
 	if (os_cnter)
 	os_cnter--;
-    return vPortExitCritical();
+    vPortExitCritical();
 }
 
 /*

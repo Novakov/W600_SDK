@@ -132,7 +132,7 @@
 ### ADS-LD Output File: '.\objs\WM_W600.axf'
 ### ADS-LD Command File: '.\objs\WM_W600.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile '.\objs\WM_W600.lnp', Handle=0x000007CC
+### Creating CmdFile '.\objs\WM_W600.lnp', Handle=0x00000A3C
 ### Writing '.lnp' file
 ### ADS-LD Command file '.\objs\WM_W600.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.

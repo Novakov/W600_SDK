@@ -23,5 +23,9 @@
 #include "../../rtos/source/heap_3.c"
 #include "../../rtos/source/heap_2.c"
 #include "../../rtos/source/croutine.c"
+#ifdef __ICCARM__
+#include "../../rtos/ports/port_m3_iar.c"
+#else
 #include "../../rtos/ports/Keil/port_m3.c"
+#endif
 #endif /* end of WM_RTOS_H */
