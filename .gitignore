@@ -1,5 +1,7 @@
 /build
 *.o
+*.d
+*.crf
 /Lib/GNU/*.a
 /Bin/W600.*
 /Bin/W600_*
