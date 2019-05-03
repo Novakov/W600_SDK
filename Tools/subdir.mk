@@ -56,6 +56,7 @@ Platform_exclude_dirs := ${TOPDIR}/Platform \
 			 ${TOPDIR}/Platform/Boot \
 			 ${TOPDIR}/Platform/Boot/gcc/bk \
 			 ${TOPDIR}/Platform/Boot/armcc \
+			 ${TOPDIR}/Platform/Boot/iccarm \
 			 ${TOPDIR}/Platform/Drivers/pmu \
 			 ${TOPDIR}/Platform/Drivers/VS10XX \
 			 ${TOPDIR}/Platform/Drivers/7816

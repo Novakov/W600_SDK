@@ -34,7 +34,7 @@ static void demo_wps_netif_stataus_callbak(u8 status)
 			struct tls_ethif *ethif;
 			ethif = tls_netif_get_ethif();
 #if TLS_CONFIG_LWIP_VER2_0_3
-			printf("NET UP OK,Local IP:%d.%d.%d.%d\r\n", ip4_addr1(ip_2_ip4(&ethif->ip_addr)),ip4_addr2(ip_2_ip4(&ethif->ip_addr)),
+			printf("NET UP OK,Local IP:%d.%d.%d.%d\r\n", ip4_addr1(ip_2_ip4(&ethif->ip_addr)),ip4_addr2(ip_2_ip4(&ethif->ip_addr)),
 					ip4_addr3(ip_2_ip4(&ethif->ip_addr)),ip4_addr4(ip_2_ip4(&ethif->ip_addr)));
 #else
       printf("NET UP OK,Local IP:%d.%d.%d.%d\n",ip4_addr1(&ethif->ip_addr.addr),ip4_addr2(&ethif->ip_addr.addr),

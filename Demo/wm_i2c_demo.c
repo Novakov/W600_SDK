@@ -101,7 +101,7 @@ u8 AT24CXX_Check(void)
 
 	return 1;											  
 }
-
+
 /**
  * @brief	read multibytes from the specified address of the eeprom
  * @param[in] addr the eeprom address will be read from

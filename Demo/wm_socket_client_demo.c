@@ -96,7 +96,7 @@ int socket_client_demo(void)
 
     ethif = tls_netif_get_ethif();
 #if TLS_CONFIG_LWIP_VER2_0_3
-    printf("\nip=%d.%d.%d.%d\n",  ip4_addr1(ip_2_ip4(&ethif->ip_addr)),ip4_addr2(ip_2_ip4(&ethif->ip_addr)),
+    printf("\nip=%d.%d.%d.%d\n",  ip4_addr1(ip_2_ip4(&ethif->ip_addr)),ip4_addr2(ip_2_ip4(&ethif->ip_addr)),
 		ip4_addr3(ip_2_ip4(&ethif->ip_addr)),ip4_addr4(ip_2_ip4(&ethif->ip_addr)));
 #else
     printf("\nip=%d.%d.%d.%d\n",ip4_addr1(&ethif->ip_addr.addr),ip4_addr2(&ethif->ip_addr.addr),

@@ -24,7 +24,7 @@
 
 #if DEMO_PWM
 static int pwm_demo_multiplex_config(u8 channel)
-{
+{
 	switch (channel)
 	{
 		case 0:

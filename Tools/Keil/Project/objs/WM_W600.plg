@@ -3,8 +3,8 @@
 <pre>
 <h1>礦ision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\lirui\Desktop\新建文件夹\WM_SDK_W60X_G3.01.00\WM_SDK\Tools\Keil\Project\WM_W600.uvproj
-Project File Date:  12/20/2018
+C:\Users\lirui\Desktop\W600相关\SDK\WM_SDK_W60X_G3.02.00\WM_SDK\Tools\Keil\Project\WM_W600.uvproj
+Project File Date:  03/06/2019
 
 <h2>Output:</h2>
 Build target 'Flash'
@@ -130,12 +130,12 @@ compiling fs.c...
 compiling httpd.c...
 compiling web.c...
 linking...
-Program Size: Code=306776 RO-data=21752 RW-data=8048 ZI-data=172408  
+Program Size: Code=308464 RO-data=21752 RW-data=8132 ZI-data=172412  
 FromELF: creating hex file...
-User command #1: fromelf.exe --bin -o "C:\Users\lirui\Desktop\新建文件夹\WM_SDK_W60X_G3.01.00\WM_SDK\Tools\Keil\Project\objs\WM_W600.bin" "C:\Users\lirui\Desktop\新建文件夹\WM_SDK_W60X_G3.01.00\WM_SDK\Tools\Keil\Project\objs\WM_W600.axf"
+User command #1: fromelf.exe --bin -o "C:\Users\lirui\Desktop\W600相关\SDK\WM_SDK_W60X_G3.02.00\WM_SDK\Tools\Keil\Project\objs\WM_W600.bin" "C:\Users\lirui\Desktop\W600相关\SDK\WM_SDK_W60X_G3.02.00\WM_SDK\Tools\Keil\Project\objs\WM_W600.axf"
 User command #2: makeimg.bat
 已复制         1 个文件。
 已复制         1 个文件。
 已复制         1 个文件。
-secboot_len:37b0, app_imglen:51314, total:5f314
+secboot_len:4948, app_imglen:519b4, total:5f9b4
 ".\objs\WM_W600.axf" - 0 Error(s), 0 Warning(s).
